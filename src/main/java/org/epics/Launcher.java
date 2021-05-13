@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.epics.data.entities.User;
 import org.epics.data.repositories.UserRepository;
+import org.epics.internal.Role;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -71,7 +72,7 @@ public class Launcher extends Application {
                 Optional<User> maybeAdmin = userRepository.findByUsername(ADMIN_USERNAME);
 
                 if (maybeAdmin.isEmpty()) {
-                    maybeAdmin = userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, "admin"));
+                    maybeAdmin = userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
                 }
 
                 return maybeAdmin.orElseThrow(() -> new Exception("Fatal Error Occurred"));

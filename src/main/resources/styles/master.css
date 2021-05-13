@@ -1,3 +1,15 @@
+*{
+    -fx-primary-color: #0d6efd;
+    -fx-secondary-color: #198754;
+    -fx-info-color: #0dcaf0;
+    -fx-danger-color: #dc3545;
+    -fx-warning-color: #ffc107;
+
+    -fx-dark-color: #2a2e37;
+    -fx-light-color: #f4f4f4;
+    -fx-white-color: #ffffff;
+}
+
 .login{
     -fx-background-image: url("../assets/bg.jpg");
     -fx-background-repeat: no-repeat;
@@ -6,10 +18,30 @@
 }
 
 .btn-primary{
-    -fx-background-color: #2196f3;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: -fx-white-color;
 }
 
 .bg-black-50{
     -fx-background-color: rgba(0, 0, 0, 0.5)
+}
+
+.bg-primary{
+    -fx-background-color: -fx-primary-color;
+}
+
+.text-white{
+    -fx-text-fill: -fx-white-color;
+}
+
+.text-white-50{
+    -fx-text-fill: rgba(255,255,255, 0.5)
+}
+
+.text-primary{
+    -fx-text-fill: -fx-primary-color;
+}
+
+.icon-white{
+    -fx-fill: -fx-white-color;
 }

@@ -1,5 +1,7 @@
 package org.epics.data.entities;
 
+import org.epics.internal.Role;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -23,12 +25,14 @@ public class User implements Serializable {
     @Column(nullable = false, unique = true)
     private String username;
     private String password;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public User() {
     }
 
-    public User(String name, String username, String password, String role) {
+    public User(String name, String username, String password, Role role) {
         this.name = name;
         this.username = username;
         this.password = password;
@@ -59,11 +63,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
