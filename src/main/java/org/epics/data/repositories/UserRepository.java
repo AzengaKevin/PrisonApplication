@@ -18,7 +18,9 @@ public class UserRepository {
 
         User user = entityManager.find(User.class, id);
 
-        return Optional.of(user);
+        if (user != null) return Optional.of(user);
+
+        return Optional.empty();
     }
 
     public Optional<User> findByUsername(String username) {
@@ -27,7 +29,9 @@ public class UserRepository {
                 .setParameter("username", username)
                 .getSingleResult();
 
-        return Optional.of(user);
+        if (user != null) return Optional.of(user);
+
+        return Optional.empty();
     }
 
     /**

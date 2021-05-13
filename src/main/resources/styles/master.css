@@ -1,0 +1,15 @@
+.login{
+    -fx-background-image: url("../assets/bg.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover, auto;
+    -fx-background-position: center center;
+}
+
+.btn-primary{
+    -fx-background-color: #2196f3;
+    -fx-text-fill: #ffffff;
+}
+
+.bg-black-50{
+    -fx-background-color: rgba(0, 0, 0, 0.5)
+}

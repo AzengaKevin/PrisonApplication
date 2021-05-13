@@ -35,9 +35,12 @@ public class Launcher extends Application {
 
         Parent parent = FXMLLoader.load(getClass().getResource("/layouts/Login.fxml"));
 
-        stage.setTitle("Prison Management System");
+        stage.setTitle("Login | Prison Management System");
+        stage.setResizable(false);
 
-        stage.setScene(new Scene(parent));
+        Scene scene = new Scene(parent);
+        scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
+        stage.setScene(scene);
 
         stage.show();
 
@@ -61,11 +64,15 @@ public class Launcher extends Application {
      */
     private static void checkAndCreateAdminIfNecessary() {
 
-        Task<User> checkAdminTask = new Task<User>() {
+        Task<User> checkAdminTask = new Task<>() {
             @Override
             protected User call() throws Exception {
 
-                Optional<User> maybeAdmin = userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, "admin"));
+                Optional<User> maybeAdmin = userRepository.findByUsername(ADMIN_USERNAME);
+
+                if (maybeAdmin.isEmpty()) {
+                    maybeAdmin = userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, "admin"));
+                }
 
                 return maybeAdmin.orElseThrow(() -> new Exception("Fatal Error Occurred"));
             }
