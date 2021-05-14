@@ -70,4 +70,9 @@ public class StaffEntity extends UserEntity {
                 password
         );
     }
+
+    @Override
+    public String getGroup() {
+        return role.getSlug();
+    }
 }

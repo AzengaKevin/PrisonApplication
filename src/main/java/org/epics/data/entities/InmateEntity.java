@@ -93,4 +93,9 @@ public class InmateEntity extends UserEntity {
     public String toString() {
         return String.format("InmateEntity(%d, %s, %s)", id, name, caseNumber);
     }
+
+    @Override
+    public String getGroup() {
+        return "Inmate";
+    }
 }

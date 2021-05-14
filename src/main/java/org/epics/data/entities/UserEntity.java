@@ -43,4 +43,6 @@ public abstract class UserEntity implements Serializable {
     public String toString() {
         return String.format("User(%d, %s)", id, name);
     }
+
+    public abstract String getGroup();
 }

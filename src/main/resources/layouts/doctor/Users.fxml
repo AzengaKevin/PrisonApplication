@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.epics.controllers.doctor.UsersController">
+    <children>
+        <TableView fx:id="usersTable" layoutX="106.0" prefHeight="480.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columns>
+                <TableColumn fx:id="idCol" prefWidth="75.0" text="ID"/>
+                <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name"/>
+                <TableColumn fx:id="groupCol" prefWidth="75.0" text="Group"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</AnchorPane>
