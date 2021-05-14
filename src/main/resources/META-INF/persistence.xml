@@ -8,7 +8,10 @@
         <class>org.epics.data.entities.UserEntity</class>
         <class>org.epics.data.entities.StaffEntity</class>
         <class>org.epics.data.entities.InmateEntity</class>
+        <class>org.epics.data.enums.Role</class>
+        <class>org.epics.data.enums.Gender</class>
         <class>org.epics.data.converters.RoleConverter</class>
+        <class>org.epics.data.converters.GenderConverter</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>

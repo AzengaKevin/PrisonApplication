@@ -47,7 +47,7 @@
                     <columns>
                         <TableColumn fx:id="idCol" prefWidth="75.0" text="ID"/>
                         <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name"/>
-                        <TableColumn fx:id="ageCol" prefWidth="75.0" text="Age"/>
+                        <TableColumn fx:id="dateOfBirthCol" prefWidth="75.0" text="Age"/>
                         <TableColumn fx:id="caseNumberCol" prefWidth="75.0" text="Case Number"/>
                         <TableColumn fx:id="convictionDateCol" prefWidth="75.0" text="Conviction Date"/>
                         <TableColumn fx:id="releaseDateCol" prefWidth="75.0" text="Release Date"/>
