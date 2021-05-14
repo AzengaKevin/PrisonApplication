@@ -11,13 +11,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.epics.data.Datasource;
 import org.epics.data.entities.User;
 import org.epics.data.repositories.UserRepository;
 import org.epics.helpers.AlertHelper;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -26,9 +24,7 @@ import java.util.concurrent.Executors;
 
 public class LoginController implements Initializable {
 
-    final private EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("PrisonMainUnit");
-    final private EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
-    final private UserRepository userRepository = new UserRepository(entityManager);
+    private Datasource datasource;
 
     @FXML
     private AnchorPane rootPane;
@@ -46,6 +42,8 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        datasource = Datasource.getInstance();
 
         executor = Executors.newCachedThreadPool(runnable -> {
             Thread thread = new Thread(runnable);
@@ -79,6 +77,8 @@ public class LoginController implements Initializable {
             @Override
             protected User call() throws Exception {
 
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+
                 Optional<User> maybeUser = userRepository.findByUsername(username);
 
                 return maybeUser.orElse(null);
@@ -86,7 +86,10 @@ public class LoginController implements Initializable {
             }
         };
 
-        loginTask.setOnFailed(event -> System.err.println("Login Failed"));
+        loginTask.setOnFailed(event -> {
+            System.err.println("Login Failed");
+            AlertHelper.showErrorAlert("Login Attempt", event.getSource().getException().getLocalizedMessage());
+        });
 
         loginTask.setOnSucceeded(event -> {
 

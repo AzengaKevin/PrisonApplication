@@ -26,21 +26,13 @@ public class UserRepository {
         return Optional.empty();
     }
 
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findByUsername(String username) throws Exception {
 
-        try {
+        User user = entityManager.createNamedQuery("User.findByUsername", User.class)
+                .setParameter("username", username)
+                .getSingleResult();
 
-            User user = entityManager.createNamedQuery("User.findByUsername", User.class)
-                    .setParameter("username", username)
-                    .getSingleResult();
-
-            if (user != null) return Optional.of(user);
-
-        } catch (Exception exception) {
-
-            Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, exception.getLocalizedMessage());
-
-        }
+        if (user != null) return Optional.of(user);
 
         return Optional.empty();
     }
@@ -73,7 +65,8 @@ public class UserRepository {
      * @param user the user to save or update
      * @return a curated User updated or created
      */
-    public Optional<User> save(User user) {
+    public Optional<User> save(User user) throws Exception {
+
         entityManager.getTransaction().begin();
         entityManager.persist(user);
         entityManager.getTransaction().commit();

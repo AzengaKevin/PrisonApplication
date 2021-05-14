@@ -6,15 +6,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.helpers.Log;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class DashboardController implements Initializable {
 
+    @FXML
+    private AnchorPane rootPane;
     @FXML
     private Button staffButton;
     @FXML
@@ -49,6 +52,9 @@ public class DashboardController implements Initializable {
             scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
 
             stage.setScene(scene);
+
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(rootPane.getScene().getWindow());
 
             stage.show();
 

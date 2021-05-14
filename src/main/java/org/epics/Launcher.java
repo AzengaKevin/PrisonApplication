@@ -6,13 +6,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.epics.data.Datasource;
 import org.epics.data.entities.User;
-import org.epics.data.repositories.UserRepository;
 import org.epics.data.enums.Role;
+import org.epics.data.repositories.UserRepository;
+import org.epics.helpers.Log;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -20,10 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Launcher extends Application {
-
-    final static private EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("PrisonMainUnit");
-    final static private EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
-    final static private UserRepository userRepository = new UserRepository(entityManager);
 
     private static Executor executor;
 
@@ -69,6 +64,10 @@ public class Launcher extends Application {
             @Override
             protected User call() throws Exception {
 
+                Datasource datasource = Datasource.getInstance();
+
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+
                 Optional<User> maybeAdmin = userRepository.findByUsername(ADMIN_USERNAME);
 
                 if (maybeAdmin.isEmpty()) {
@@ -81,7 +80,18 @@ public class Launcher extends Application {
             }
         };
 
-        checkAdminTask.setOnFailed(workerEvent -> System.err.println(workerEvent.getSource().getException().getLocalizedMessage()));
+        checkAdminTask.setOnFailed(workerEvent -> {
+            Log.error(Launcher.class.getSimpleName(), "checkAndCreateAdminIfNecessary", workerEvent.getSource().getException());
+            try {
+
+                Datasource datasource = Datasource.getInstance();
+
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+                userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
+            } catch (Exception exception) {
+                Log.error(Launcher.class.getSimpleName(), "checkAndCreateAdminIfNecessary", workerEvent.getSource().getException());
+            }
+        });
 
         checkAdminTask.setOnSucceeded(workerStateEvent -> {
             User user = (User) workerStateEvent.getSource().getValue();

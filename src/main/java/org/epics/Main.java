@@ -10,17 +10,20 @@ import java.util.Optional;
 
 public class Main {
 
-
     final static private EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("PrisonMainUnit");
     final static private EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
     final static private UserRepository userRepository = new UserRepository(entityManager);
 
     public static void main(String[] args) {
 
-        Optional<User> maybeAdmin = userRepository.findByUsername("testes");
+        try {
 
-        System.out.println("Test User Present: " + maybeAdmin.isPresent());
+            Optional<User> maybeAdmin = userRepository.findByUsername("testes");
 
-        maybeAdmin.ifPresent(System.out::println);
+            System.out.println("Test User Present: " + maybeAdmin.isPresent());
+
+            maybeAdmin.ifPresent(System.out::println);
+        } catch (Exception e) {
+        }
     }
 }

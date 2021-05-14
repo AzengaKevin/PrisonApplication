@@ -4,12 +4,20 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.epics.data.Datasource;
 import org.epics.data.enums.Role;
 import org.epics.data.repositories.UserRepository;
 import org.epics.helpers.Log;
@@ -25,23 +33,33 @@ import java.util.concurrent.Executors;
 
 public class StaffController implements Initializable {
 
-    final private EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("PrisonMainUnit");
-    final private EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
-    final private UserRepository userRepository = new UserRepository(entityManager);
+    private Datasource datasource;
 
-    public ProgressIndicator staffProgressIndicator;
-    public Button addStaffMember;
-    public TableView<User> staffMembersTable;
-    public TableColumn<User, Integer> idCol;
-    public TableColumn<User, String> nameCol;
-    public TableColumn<User, String> usernameCol;
-    public TableColumn<User, String> roleCol;
-    public TableColumn<User, String> passwordCol;
+    @FXML
+    private ProgressIndicator staffProgressIndicator;
+    @FXML
+    private Button addStaffMember;
+    @FXML
+    private TableView<User> staffMembersTable;
+    @FXML
+    private TableColumn<User, Integer> idCol;
+    @FXML
+    private TableColumn<User, String> nameCol;
+    @FXML
+    private TableColumn<User, String> usernameCol;
+    @FXML
+    private TableColumn<User, String> roleCol;
+    @FXML
+    private TableColumn<User, String> passwordCol;
+    @FXML
+    private AnchorPane rootPane;
 
     private Executor executor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        datasource = Datasource.getInstance();
 
         executor = Executors.newCachedThreadPool(runnable -> {
             Thread thread = new Thread(runnable);
@@ -54,12 +72,41 @@ public class StaffController implements Initializable {
         associateCols();
 
         retrieveAndShowStaff();
+
+        addStaffMember.setOnAction(event -> launchAddStaffStage());
+    }
+
+    private void launchAddStaffStage() {
+        try {
+
+            Parent parent = FXMLLoader.load(getClass().getResource("/layouts/admin/AddStaff.fxml"));
+
+            Stage stage = new Stage();
+            stage.setTitle("Add Staff | Prison Management Software");
+            Scene scene = new Scene(parent);
+
+            scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
+
+            stage.setScene(scene);
+
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(rootPane.getScene().getWindow());
+
+            stage.setOnCloseRequest(event -> retrieveAndShowStaff());
+
+            stage.show();
+
+        } catch (Exception exception) {
+            Log.error(getClass().getSimpleName(), "launchAddStaffStage", exception);
+        }
     }
 
     private void retrieveAndShowStaff() {
         Task<List<org.epics.data.entities.User>> staffTask = new Task<>() {
             @Override
             protected List<org.epics.data.entities.User> call() throws Exception {
+
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
                 return userRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.TaskManager, Role.Warden));
             }
         };
