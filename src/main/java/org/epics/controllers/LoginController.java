@@ -98,25 +98,23 @@ public class LoginController implements Initializable {
 
                 if (staffEntity.getPassword().equals(password)) {
 
-                    switch (staffEntity.getRole()) {
-                        case Admin -> {
-                            try {
+                    try {
 
-                                changeStage("/layouts/admin/Dashboard.fxml", "Admin Dashboard | Prison Management System");
+                        switch (staffEntity.getRole()) {
+                            case Admin -> changeStage("/layouts/admin/Dashboard.fxml", "Admin Dashboard | Prison Management System");
 
-                            } catch (Exception exception) {
+                            case Doctor -> changeStage("/layouts/doctor/Dashboard.fxml", "Doctor Dashboard | Prison Management System");
 
-                                System.err.println(exception.getLocalizedMessage());
-                            }
+                            case TaskManager -> changeStage("/layouts/taskManager/Dashboard.fxml", "Task Manager Dashboard | Prison Management System");
+
+                            case Warden -> changeStage("/layouts/warden/Dashboard.fxml", "Warden Dashboard | Prison Management System");
+
+                            default -> System.out.println("No Idea Which Stuff You're");
                         }
 
-                        case Doctor -> System.out.println("Doctor");
+                    } catch (Exception exception) {
 
-                        case TaskManager -> System.out.println("Task Manager");
-
-                        case Warden -> System.out.println("Warden");
-
-                        default -> System.out.println("No Idea");
+                        System.err.println(exception.getLocalizedMessage());
                     }
 
                 } else {
