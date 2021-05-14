@@ -12,8 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
-import org.epics.data.entities.User;
-import org.epics.data.repositories.UserRepository;
+import org.epics.data.entities.StaffEntity;
+import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.AlertHelper;
 
 import java.net.URL;
@@ -73,15 +73,15 @@ public class LoginController implements Initializable {
             return;
         }
 
-        Task<User> loginTask = new Task<>() {
+        Task<StaffEntity> loginTask = new Task<>() {
             @Override
-            protected User call() throws Exception {
+            protected StaffEntity call() throws Exception {
 
-                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+                StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
 
-                Optional<User> maybeUser = userRepository.findByUsername(username);
+                Optional<StaffEntity> maybeStaff = staffRepository.findByUsername(username);
 
-                return maybeUser.orElse(null);
+                return maybeStaff.orElse(null);
 
             }
         };
@@ -93,12 +93,12 @@ public class LoginController implements Initializable {
 
         loginTask.setOnSucceeded(event -> {
 
-            if (event.getSource().getValue() instanceof User) {
-                User user = (User) event.getSource().getValue();
+            if (event.getSource().getValue() instanceof StaffEntity) {
+                StaffEntity staffEntity = (StaffEntity) event.getSource().getValue();
 
-                if (user.getPassword().equals(password)) {
+                if (staffEntity.getPassword().equals(password)) {
 
-                    switch (user.getRole()) {
+                    switch (staffEntity.getRole()) {
                         case Admin -> {
                             try {
 
@@ -110,25 +110,13 @@ public class LoginController implements Initializable {
                             }
                         }
 
-                        case Doctor -> {
-                            System.out.println("Doctor");
-                        }
+                        case Doctor -> System.out.println("Doctor");
 
-                        case TaskManager -> {
-                            System.out.println("Task Manager");
+                        case TaskManager -> System.out.println("Task Manager");
 
-                        }
+                        case Warden -> System.out.println("Warden");
 
-                        case Warden -> {
-
-                            System.out.println("Warden");
-                        }
-
-                        default -> {
-
-                            System.out.println("No Idea");
-
-                        }
+                        default -> System.out.println("No Idea");
                     }
 
                 } else {

@@ -18,13 +18,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
+import org.epics.data.entities.StaffEntity;
 import org.epics.data.enums.Role;
-import org.epics.data.repositories.UserRepository;
+import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.Log;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -102,12 +100,12 @@ public class StaffController implements Initializable {
     }
 
     private void retrieveAndShowStaff() {
-        Task<List<org.epics.data.entities.User>> staffTask = new Task<>() {
+        Task<List<StaffEntity>> staffTask = new Task<>() {
             @Override
-            protected List<org.epics.data.entities.User> call() throws Exception {
+            protected List<StaffEntity> call() throws Exception {
 
-                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
-                return userRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.TaskManager, Role.Warden));
+                StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
+                return staffRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.TaskManager, Role.Warden));
             }
         };
 
@@ -122,15 +120,15 @@ public class StaffController implements Initializable {
 
             staffProgressIndicator.setVisible(false);
 
-            List<org.epics.data.entities.User> userList = (List<org.epics.data.entities.User>) event.getSource().getValue();
+            List<StaffEntity> staffEntityList = (List<StaffEntity>) event.getSource().getValue();
 
-            List<User> tableUsers = userList.stream().map(
-                    user -> new User(
-                            user.getId(),
-                            user.getName(),
-                            user.getUsername(),
-                            user.getRole(),
-                            user.getPassword()
+            List<User> tableUsers = staffEntityList.stream().map(
+                    staffEntity -> new User(
+                            staffEntity.getId(),
+                            staffEntity.getName(),
+                            staffEntity.getUsername(),
+                            staffEntity.getRole(),
+                            staffEntity.getPassword()
                     )
             ).toList();
 

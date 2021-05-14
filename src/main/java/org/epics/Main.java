@@ -1,7 +1,8 @@
 package org.epics;
 
-import org.epics.data.entities.User;
-import org.epics.data.repositories.UserRepository;
+import org.epics.data.entities.StaffEntity;
+import org.epics.data.enums.Role;
+import org.epics.data.repositories.StaffRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -12,18 +13,25 @@ public class Main {
 
     final static private EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("PrisonMainUnit");
     final static private EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
-    final static private UserRepository userRepository = new UserRepository(entityManager);
+    final static private StaffRepository userRepository = new StaffRepository(entityManager);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         try {
 
-            Optional<User> maybeAdmin = userRepository.findByUsername("testes");
 
-            System.out.println("Test User Present: " + maybeAdmin.isPresent());
+            Optional<StaffEntity> maybeAdmin = userRepository.findByUsername("test");
+
+            if (maybeAdmin.isEmpty()) {
+                userRepository.save(new StaffEntity("Test User", "test", "elephant69", Role.Doctor));
+            }
 
             maybeAdmin.ifPresent(System.out::println);
+
         } catch (Exception e) {
+
+            userRepository.save(new StaffEntity("Test User", "test", "elephant69", Role.Doctor));
+
         }
     }
 }

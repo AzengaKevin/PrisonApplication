@@ -7,9 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
-import org.epics.data.entities.User;
+import org.epics.data.entities.StaffEntity;
 import org.epics.data.enums.Role;
-import org.epics.data.repositories.UserRepository;
+import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.Log;
 
 import java.util.Optional;
@@ -60,19 +60,19 @@ public class Launcher extends Application {
      */
     private static void checkAndCreateAdminIfNecessary() {
 
-        Task<User> checkAdminTask = new Task<>() {
+        Task<StaffEntity> checkAdminTask = new Task<>() {
             @Override
-            protected User call() throws Exception {
+            protected StaffEntity call() throws Exception {
 
                 Datasource datasource = Datasource.getInstance();
 
-                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+                StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
 
-                Optional<User> maybeAdmin = userRepository.findByUsername(ADMIN_USERNAME);
+                Optional<StaffEntity> maybeAdmin = staffRepository.findByUsername(ADMIN_USERNAME);
 
                 if (maybeAdmin.isEmpty()) {
 
-                    maybeAdmin = userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
+                    maybeAdmin = staffRepository.save(new StaffEntity("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
 
                 }
 
@@ -86,16 +86,17 @@ public class Launcher extends Application {
 
                 Datasource datasource = Datasource.getInstance();
 
-                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
-                userRepository.save(new User("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
+                StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
+                staffRepository.save(new StaffEntity("Super Admin", ADMIN_USERNAME, ADMIN_PASSWORD, Role.Admin));
+
             } catch (Exception exception) {
                 Log.error(Launcher.class.getSimpleName(), "checkAndCreateAdminIfNecessary", workerEvent.getSource().getException());
             }
         });
 
         checkAdminTask.setOnSucceeded(workerStateEvent -> {
-            User user = (User) workerStateEvent.getSource().getValue();
-            Logger.getLogger(TAG).log(Level.INFO, user.toString());
+            StaffEntity userEntity = (StaffEntity) workerStateEvent.getSource().getValue();
+            Logger.getLogger(TAG).log(Level.INFO, userEntity.toString());
 
         });
 

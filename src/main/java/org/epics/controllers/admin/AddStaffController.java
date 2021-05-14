@@ -12,15 +12,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.epics.data.Datasource;
-import org.epics.data.entities.User;
+import org.epics.data.entities.StaffEntity;
 import org.epics.data.enums.Role;
-import org.epics.data.repositories.UserRepository;
+import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -99,14 +96,14 @@ public class AddStaffController implements Initializable {
             return;
         }
 
-        User user = new User(name, username, password, Role.fromFromSlug(role));
+        StaffEntity staffEntity = new StaffEntity(name, username, password, Role.fromFromSlug(role));
 
-        Task<User> addUserTask = new Task<>() {
+        Task<StaffEntity> addUserTask = new Task<>() {
             @Override
-            protected User call() throws Exception {
-                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+            protected StaffEntity call() throws Exception {
+                StaffRepository userRepository = new StaffRepository(datasource.getEntityManager());
 
-                return userRepository.save(user).orElseThrow(Exception::new);
+                return userRepository.save(staffEntity).orElseThrow(Exception::new);
             }
         };
 
@@ -127,7 +124,6 @@ public class AddStaffController implements Initializable {
         roleField.setItems(
                 FXCollections.observableArrayList(
                         Arrays.stream(Role.values())
-                                .filter(role -> !role.equals(Role.Prisoner))
                                 .map(Role::getSlug)
                                 .toList()
                 )

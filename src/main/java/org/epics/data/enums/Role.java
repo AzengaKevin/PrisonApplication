@@ -6,8 +6,7 @@ public enum Role {
     Admin("admin"),
     Doctor("doctor"),
     TaskManager("task-manager"),
-    Warden("warden"),
-    Prisoner("prisoner");
+    Warden("warden");
 
     private String slug;
 
