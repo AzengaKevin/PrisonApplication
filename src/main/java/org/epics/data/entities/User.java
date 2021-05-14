@@ -11,6 +11,10 @@ import java.io.Serializable;
         @NamedQuery(
                 name = "User.findByUsername",
                 query = "SELECT u FROM User u WHERE u.username = :username"
+        ),
+        @NamedQuery(
+                name = "User.findByRoles",
+                query = "SELECT u FROM User u WHERE u.role IN (:roles)"
         )
 })
 public class User implements Serializable {

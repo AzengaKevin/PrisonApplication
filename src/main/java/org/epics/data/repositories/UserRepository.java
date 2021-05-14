@@ -1,6 +1,7 @@
 package org.epics.data.repositories;
 
 import org.epics.data.entities.User;
+import org.epics.data.enums.Role;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -54,7 +55,20 @@ public class UserRepository {
     }
 
     /**
-     * Upserts a User in to the database
+     * Get users of the specified roles from the database
+     *
+     * @param roles list of roles to examine
+     * @return List of Users with that role
+     */
+    public List<User> findByRoles(List<Role> roles) {
+
+        return entityManager.createNamedQuery("User.findByRoles", User.class)
+                .setParameter("roles", roles)
+                .getResultList();
+    }
+
+    /**
+     * Updates or inserts a User in to the database
      *
      * @param user the user to save or update
      * @return a curated User updated or created
