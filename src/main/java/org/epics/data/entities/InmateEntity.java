@@ -1,5 +1,7 @@
 package org.epics.data.entities;
 
+import org.epics.data.enums.Gender;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -10,7 +12,7 @@ public class InmateEntity extends UserEntity {
     @Column(name = "case_number")
     private String caseNumber;
 
-    private Integer gender;
+    private Gender gender;
 
     private String address;
 
@@ -29,7 +31,7 @@ public class InmateEntity extends UserEntity {
     public InmateEntity() {
     }
 
-    public InmateEntity(String name, String caseNumber, Integer gender, String address, Date dateOfBirth, Date convictionDate, Date releaseDate) {
+    public InmateEntity(String name, String caseNumber, Gender gender, String address, Date dateOfBirth, Date convictionDate, Date releaseDate) {
         super(name);
         this.caseNumber = caseNumber;
         this.gender = gender;
@@ -47,11 +49,11 @@ public class InmateEntity extends UserEntity {
         this.caseNumber = caseNumber;
     }
 
-    public Integer getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

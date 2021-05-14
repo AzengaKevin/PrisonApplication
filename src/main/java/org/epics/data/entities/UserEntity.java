@@ -1,7 +1,5 @@
 package org.epics.data.entities;
 
-import org.epics.data.enums.Role;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
