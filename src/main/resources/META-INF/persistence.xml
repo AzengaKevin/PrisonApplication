@@ -6,13 +6,16 @@
     <persistence-unit name="PrisonMainUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>org.epics.data.entities.User</class>
+        <class>org.epics.data.enums.Role</class>
+        <class>org.epics.data.converters.RoleConverter</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/prison_db"/>
             <property name="javax.persistence.jdbc.user" value="student"/>
             <property name="javax.persistence.jdbc.password" value="turtledove"/>
             <property name="hibernate.show_sql" value="true"/>
-            <!--<property name="hibernate.hbm2ddl.auto" value="update"/> -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.format_sql" value="true"/>

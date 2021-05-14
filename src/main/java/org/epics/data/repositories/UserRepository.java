@@ -5,6 +5,8 @@ import org.epics.data.entities.User;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserRepository {
 
@@ -25,11 +27,19 @@ public class UserRepository {
 
     public Optional<User> findByUsername(String username) {
 
-        User user = entityManager.createNamedQuery("User.findByUsername", User.class)
-                .setParameter("username", username)
-                .getSingleResult();
+        try {
 
-        if (user != null) return Optional.of(user);
+            User user = entityManager.createNamedQuery("User.findByUsername", User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+
+            if (user != null) return Optional.of(user);
+
+        } catch (Exception exception) {
+
+            Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, exception.getLocalizedMessage());
+
+        }
 
         return Optional.empty();
     }

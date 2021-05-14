@@ -1,6 +1,6 @@
 package org.epics.data.entities;
 
-import org.epics.internal.Role;
+import org.epics.data.enums.Role;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,7 +26,6 @@ public class User implements Serializable {
     private String username;
     private String password;
 
-    @Enumerated(EnumType.STRING)
     private Role role;
 
     public User() {
@@ -53,6 +52,14 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
