@@ -22,6 +22,7 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         usersButton.setOnAction(event -> launchStage("/layouts/doctor/Users.fxml", "Users | Prison Management Software"));
+        healthRecordsButton.setOnAction(event -> launchStage("/layouts/doctor/HealthRecords.fxml", "Health Records | Prison Management Software"));
     }
 
 
