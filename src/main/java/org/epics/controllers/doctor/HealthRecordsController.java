@@ -2,32 +2,186 @@ package org.epics.controllers.doctor;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.epics.data.Datasource;
+import org.epics.data.entities.UserEntity;
+import org.epics.data.repositories.UserRepository;
+import org.epics.helpers.AlertHelper;
+import org.epics.helpers.Log;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class HealthRecordsController implements Initializable {
 
     public TextField searchNameField;
     public Button searchUserButton;
 
-    public TableView usersTable;
-    public TableColumn nameCol;
+    public TableView<User> usersTable;
+    public TableColumn<User, String> nameCol;
 
     public Button addHealthRecordButton;
 
-    public TableColumn diseaseCol;
-    public TableColumn diagnosisDateCol;
-    public TableColumn endDateCol;
+    public TableView<HealthRecord> healthRecordsTable;
+    public TableColumn<HealthRecord, String> diseaseCol;
+    public TableColumn<HealthRecord, String> diagnosisDateCol;
+    public TableColumn<HealthRecord, String> endDateCol;
+
+    public MenuItem addRecordMenuItem;
+    public MenuItem showRecordMenuItem;
+    public MenuItem checkDescriptionMenuItem;
+    public AnchorPane rootPane;
+
+    private Datasource datasource;
+    private Executor executor;
+
+    private User user;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        datasource = Datasource.getInstance();
+
+        executor = Executors.newCachedThreadPool(r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            return thread;
+        });
+
+        addHealthRecordButton.setDisable(true);
+
+        associateColumnsToProperties();
+
+        retrieveAndShowUsers();
+
+        addRecordMenuItem.setOnAction(event -> {
+
+            User user = usersTable.getSelectionModel().getSelectedItem();
+
+            if (user != null) {
+
+                this.user = user;
+
+                addHealthRecordButton.setDisable(false);
+
+                handleAddHealthRecord();
+            }
+        });
+
+        showRecordMenuItem.setOnAction(event -> {
+
+            User user = usersTable.getSelectionModel().getSelectedItem();
+
+            if (user != null) {
+
+                this.user = user;
+
+                addHealthRecordButton.setDisable(false);
+
+                showCurrentUserHealthRecords();
+            }
+
+        });
+
+        addHealthRecordButton.setOnAction(event -> handleAddHealthRecord());
+    }
+
+    private void showCurrentUserHealthRecords() {
+        // @TODO
+    }
+
+    private void associateColumnsToProperties() {
+        //Users Table
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        //Health Records Table
+        diseaseCol.setCellValueFactory(new PropertyValueFactory<>("disease"));
+        diagnosisDateCol.setCellValueFactory(new PropertyValueFactory<>("diagnosisDate"));
+        endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+    }
+
+    private void handleAddHealthRecord() {
+
+        if (user != null) {
+
+            try {
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/layouts/doctor/AddHealthRecord.fxml"));
+
+                Parent root = loader.load();
+
+                AddHealthRecordController controller = loader.getController();
+
+                controller.setUserEntity(user.getId());
+
+                Stage stage = new Stage();
+                stage.setTitle("Add Health Record | Prison Management Software");
+
+                Scene scene = new Scene(root);
+
+                scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
+
+                stage.setScene(scene);
+
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.initOwner(rootPane.getScene().getWindow());
+
+                stage.show();
+
+
+            } catch (Exception exception) {
+
+                Log.error(getClass().getSimpleName(), "handleAddHealthRecord", exception);
+
+            }
+
+        } else {
+            AlertHelper.showErrorAlert("Add Health Record", "You must select a user");
+        }
+    }
+
+    private void retrieveAndShowUsers() {
+        Task<List<UserEntity>> retrieveUsersTask = new Task<>() {
+            @Override
+            protected List<UserEntity> call() throws Exception {
+
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+
+                return userRepository.findAll();
+            }
+        };
+
+        retrieveUsersTask.setOnFailed(event -> {
+            Log.error(getClass().getSimpleName(), "retrieveAndShowUsers:failed", event.getSource().getException());
+            AlertHelper.showErrorAlert("Retrieving and Showing User", event.getSource().getException().getLocalizedMessage());
+        });
+
+        retrieveUsersTask.setOnSucceeded(event -> {
+            List<UserEntity> userEntityList = (List<UserEntity>) event.getSource().getValue();
+
+            List<User> userList = userEntityList.stream().map(userEntity -> new User(
+                    userEntity.getId(),
+                    userEntity.getName(),
+                    userEntity.getGroup()
+            )).toList();
+
+            usersTable.setItems(FXCollections.observableArrayList(userList));
+        });
+
+        executor.execute(retrieveUsersTask);
     }
 
 
@@ -69,6 +223,18 @@ public class HealthRecordsController implements Initializable {
             this.diagnosisDate = new SimpleStringProperty(diagnosisDate);
             this.endDate = new SimpleStringProperty(endDate);
 
+        }
+
+        public String getDisease() {
+            return disease.get();
+        }
+
+        public String getDiagnosisDate() {
+            return diagnosisDate.get();
+        }
+
+        public String getEndDate() {
+            return endDate.get();
         }
     }
 }
