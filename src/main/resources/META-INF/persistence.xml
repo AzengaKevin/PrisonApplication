@@ -8,6 +8,7 @@
         <class>org.epics.data.entities.UserEntity</class>
         <class>org.epics.data.entities.StaffEntity</class>
         <class>org.epics.data.entities.InmateEntity</class>
+        <class>org.epics.data.entities.HealthRecordEntity</class>
         <class>org.epics.data.enums.Role</class>
         <class>org.epics.data.enums.Gender</class>
         <class>org.epics.data.converters.RoleConverter</class>

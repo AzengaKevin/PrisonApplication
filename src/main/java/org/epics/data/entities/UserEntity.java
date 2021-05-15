@@ -2,6 +2,8 @@ package org.epics.data.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -15,6 +17,9 @@ public abstract class UserEntity implements Serializable {
 
     @Column(nullable = false)
     protected String name;
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    protected List<HealthRecordEntity> healthRecordEntityList = new ArrayList<>();
 
     public UserEntity() {
     }
@@ -45,4 +50,12 @@ public abstract class UserEntity implements Serializable {
     }
 
     public abstract String getGroup();
+
+    public List<HealthRecordEntity> getHealthRecordEntityList() {
+        return healthRecordEntityList;
+    }
+
+    public void addHealthRecord(HealthRecordEntity healthRecordEntity) {
+        healthRecordEntityList.add(healthRecordEntity);
+    }
 }

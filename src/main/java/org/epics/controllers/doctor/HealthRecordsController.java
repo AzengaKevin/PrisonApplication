@@ -14,13 +14,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
+import org.epics.data.entities.HealthRecordEntity;
 import org.epics.data.entities.UserEntity;
 import org.epics.data.repositories.UserRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -49,6 +52,7 @@ public class HealthRecordsController implements Initializable {
     private Executor executor;
 
     private User user;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -100,7 +104,41 @@ public class HealthRecordsController implements Initializable {
     }
 
     private void showCurrentUserHealthRecords() {
-        // @TODO
+
+        if (user != null) {
+
+            Task<UserEntity> getUserEntityTask = new Task<>() {
+                @Override
+                protected UserEntity call() throws Exception {
+
+                    UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+
+                    return userRepository.findById(user.getId()).orElseThrow(IllegalAccessError::new);
+                }
+            };
+
+            getUserEntityTask.setOnFailed(event -> {
+                Log.error(getClass().getSimpleName(), "setUserEntity", event.getSource().getException());
+                AlertHelper.showErrorAlert("Setting User", event.getSource().getException().getLocalizedMessage());
+            });
+
+            getUserEntityTask.setOnSucceeded(event -> {
+                UserEntity userEntity = (UserEntity) event.getSource().getValue();
+
+                List<HealthRecordEntity> healthRecordEntityList = userEntity.getHealthRecordEntityList();
+
+                List<HealthRecord> healthRecordList = healthRecordEntityList.stream()
+                        .map(healthRecordEntity -> new HealthRecord(
+                                healthRecordEntity.getDisease(),
+                                dateFormat.format(healthRecordEntity.getDiagnosisDate()),
+                                dateFormat.format(healthRecordEntity.getEndDate())
+                        )).toList();
+
+                healthRecordsTable.setItems(FXCollections.observableArrayList(healthRecordList));
+            });
+
+            executor.execute(getUserEntityTask);
+        }
     }
 
     private void associateColumnsToProperties() {
@@ -135,6 +173,8 @@ public class HealthRecordsController implements Initializable {
                 scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
 
                 stage.setScene(scene);
+
+                stage.setOnCloseRequest(event -> showCurrentUserHealthRecords());
 
                 stage.initModality(Modality.WINDOW_MODAL);
                 stage.initOwner(rootPane.getScene().getWindow());
