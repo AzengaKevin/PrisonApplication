@@ -37,6 +37,7 @@ public class DashboardController implements Initializable {
         staffButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Staff.fxml", "Staff | Prison Management Software"));
         inmatesButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Inmates.fxml", "Inmates | Prison Management Software"));
         visitorsButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Visitors.fxml", "Visitors | Prison Management Software"));
+        healthRecordsButton.setOnAction(actionEvent -> launchStage("/layouts/admin/HealthRecords.fxml", "Health Records | Prison Management Software"));
     }
 
 
