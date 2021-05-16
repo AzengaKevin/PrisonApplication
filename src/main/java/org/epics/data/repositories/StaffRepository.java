@@ -57,6 +57,20 @@ public class StaffRepository {
     }
 
     /**
+     * Updates Staff in to the database
+     *
+     * @param userEntity the user to save or update
+     * @return a curated User updated or created
+     */
+    public Optional<StaffEntity> update(StaffEntity userEntity) throws Exception {
+        entityManager.getTransaction().begin();
+        entityManager.merge(userEntity);
+        entityManager.getTransaction().commit();
+
+        return Optional.of(userEntity);
+    }
+
+    /**
      * Updates or inserts a User in to the database
      *
      * @param userEntity the user to save or update
