@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="rootPane" prefHeight="325.0" prefWidth="360.0" stylesheets="@../../styles/master.css"
+            xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.epics.controllers.taskManager.AddTaskController">
+    <children>
+        <VBox layoutX="26.0" layoutY="51.0" prefHeight="400.0" prefWidth="600.0" spacing="16.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+            </padding>
+            <children>
+                <TextField fx:id="titleField" promptText="Title"/>
+                <TextArea fx:id="descriptionField" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0"/>
+                <DatePicker fx:id="startDateField" prefWidth="328.0"/>
+                <DatePicker fx:id="endDateField" prefWidth="328.0"/>
+                <HBox alignment="CENTER" prefWidth="200.0" spacing="32.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" styleClass="btn-primary" text="Cancel"/>
+                        <Button fx:id="submitButton" mnemonicParsing="false" styleClass="btn-primary" text="Submit"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
