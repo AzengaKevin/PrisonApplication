@@ -4,6 +4,8 @@ import org.epics.data.enums.Gender;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "inmates")
@@ -27,6 +29,9 @@ public class InmateEntity extends UserEntity {
     @Column(name = "release_date")
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
+
+    @ManyToMany(mappedBy = "inmateEntityList")
+    private Set<Task> tasks = new HashSet<>();
 
     public InmateEntity() {
     }
@@ -87,6 +92,14 @@ public class InmateEntity extends UserEntity {
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
     }
 
     @Override
