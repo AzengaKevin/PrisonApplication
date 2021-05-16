@@ -7,6 +7,12 @@ import java.util.*;
 
 @Entity
 @Table(name = "tasks")
+@NamedQueries({
+        @NamedQuery(
+                name = "Task.findByTitle",
+                query = "SELECT t FROM Task t WHERE t.title = :title"
+        )
+})
 public class Task implements Serializable {
 
     @Id

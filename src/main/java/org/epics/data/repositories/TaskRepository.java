@@ -25,7 +25,18 @@ public class TaskRepository {
 
     }
 
-    public List<Task> findAll() {
+    public Optional<Task> findByTitle(String title) throws Exception {
+
+        Task taskEntity = entityManager.createNamedQuery("Task.findByTitle", Task.class)
+                .setParameter("title", title)
+                .getSingleResult();
+
+        if (taskEntity != null) return Optional.of(taskEntity);
+
+        return Optional.empty();
+    }
+
+    public List<Task> findAll() throws Exception {
         return entityManager.createQuery("from Task", Task.class).getResultList();
     }
 

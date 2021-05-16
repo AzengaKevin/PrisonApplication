@@ -14,6 +14,10 @@ public class InmateRepository {
         this.entityManager = entityManager;
     }
 
+    public Optional<InmateEntity> findById(Integer id) {
+        return Optional.of(entityManager.find(InmateEntity.class, id));
+    }
+
     public List<InmateEntity> findAll() {
 
         return entityManager.createQuery("from InmateEntity", InmateEntity.class)
