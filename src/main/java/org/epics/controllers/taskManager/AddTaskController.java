@@ -75,7 +75,6 @@ public class AddTaskController implements Initializable {
             return;
         }
 
-
         LocalDate startLocalDate = startDateField.getValue();
         Instant startInstant = Instant.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()));
         Date startDate = Date.from(startInstant);
