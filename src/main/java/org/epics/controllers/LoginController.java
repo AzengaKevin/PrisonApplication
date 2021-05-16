@@ -15,6 +15,7 @@ import org.epics.data.Datasource;
 import org.epics.data.entities.StaffEntity;
 import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.AlertHelper;
+import org.epics.helpers.AuthHelper;
 
 import java.net.URL;
 import java.util.Optional;
@@ -98,7 +99,10 @@ public class LoginController implements Initializable {
 
                 if (staffEntity.getPassword().equals(password)) {
 
+
                     try {
+
+                        AuthHelper.loginStaff(staffEntity);
 
                         switch (staffEntity.getRole()) {
                             case Admin -> changeStage("/layouts/admin/Dashboard.fxml", "Admin Dashboard | Prison Management System");
