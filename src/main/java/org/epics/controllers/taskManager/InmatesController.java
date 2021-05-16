@@ -24,6 +24,7 @@ import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -237,7 +238,7 @@ public class InmatesController implements Initializable {
         public TaskItem(Task task) {
             this.title = new SimpleStringProperty(task.getTitle());
             this.description = new SimpleStringProperty(task.getDescription());
-            this.status = new SimpleStringProperty("Not Completed");
+            this.status = new SimpleStringProperty(task.getEndDate().before(new Date()) ? "Not Completed" : "Completed");
         }
 
         public String getTitle() {
