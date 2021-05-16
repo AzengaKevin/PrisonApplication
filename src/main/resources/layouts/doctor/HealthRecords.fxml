@@ -87,7 +87,7 @@
                             <contextMenu>
                                 <ContextMenu>
                                     <items>
-                                        <MenuItem fx:id="checkDescriptionMenuItem" mnemonicParsing="false" text="Check Prescription"/>
+                                        <MenuItem fx:id="checkPrescriptionMenuItem" mnemonicParsing="false" text="Check Prescription"/>
                                     </items>
                                 </ContextMenu>
                             </contextMenu>

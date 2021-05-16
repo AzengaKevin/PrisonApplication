@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -30,23 +31,37 @@ import java.util.concurrent.Executors;
 
 public class HealthRecordsController implements Initializable {
 
-    public TextField searchNameField;
-    public Button searchUserButton;
+    @FXML
+    private TextField searchNameField;
+    @FXML
+    private Button searchUserButton;
 
-    public TableView<User> usersTable;
-    public TableColumn<User, String> nameCol;
+    @FXML
+    private TableView<User> usersTable;
+    @FXML
+    private TableColumn<User, String> nameCol;
 
-    public Button addHealthRecordButton;
+    @FXML
+    private Button addHealthRecordButton;
 
-    public TableView<HealthRecord> healthRecordsTable;
-    public TableColumn<HealthRecord, String> diseaseCol;
-    public TableColumn<HealthRecord, String> diagnosisDateCol;
-    public TableColumn<HealthRecord, String> endDateCol;
+    @FXML
+    private TableView<HealthRecord> healthRecordsTable;
+    @FXML
+    private TableColumn<HealthRecord, String> diseaseCol;
+    @FXML
+    private TableColumn<HealthRecord, String> diagnosisDateCol;
+    @FXML
+    private TableColumn<HealthRecord, String> endDateCol;
 
-    public MenuItem addRecordMenuItem;
-    public MenuItem showRecordMenuItem;
-    public MenuItem checkDescriptionMenuItem;
-    public AnchorPane rootPane;
+    @FXML
+    private MenuItem addRecordMenuItem;
+    @FXML
+    private MenuItem showRecordMenuItem;
+    @FXML
+    private AnchorPane rootPane;
+
+    @FXML
+    private MenuItem checkPrescriptionMenuItem;
 
     private Datasource datasource;
     private Executor executor;
@@ -101,6 +116,12 @@ public class HealthRecordsController implements Initializable {
         });
 
         addHealthRecordButton.setOnAction(event -> handleAddHealthRecord());
+
+        checkPrescriptionMenuItem.setOnAction(event -> {
+            HealthRecord healthRecord = healthRecordsTable.getSelectionModel().getSelectedItem();
+
+            AlertHelper.showInformationAlert("Prescription", healthRecord.getPrescription());
+        });
     }
 
     private void showCurrentUserHealthRecords() {
@@ -130,6 +151,7 @@ public class HealthRecordsController implements Initializable {
                 List<HealthRecord> healthRecordList = healthRecordEntityList.stream()
                         .map(healthRecordEntity -> new HealthRecord(
                                 healthRecordEntity.getDisease(),
+                                healthRecordEntity.getPrescription(),
                                 dateFormat.format(healthRecordEntity.getDiagnosisDate()),
                                 dateFormat.format(healthRecordEntity.getEndDate())
                         )).toList();
@@ -254,12 +276,14 @@ public class HealthRecordsController implements Initializable {
     public static class HealthRecord {
 
         private SimpleStringProperty disease;
+        private SimpleStringProperty prescription;
         private SimpleStringProperty diagnosisDate;
         private SimpleStringProperty endDate;
 
-        public HealthRecord(String disease, String diagnosisDate, String endDate) {
+        public HealthRecord(String disease, String prescription, String diagnosisDate, String endDate) {
 
             this.disease = new SimpleStringProperty(disease);
+            this.prescription = new SimpleStringProperty(prescription);
             this.diagnosisDate = new SimpleStringProperty(diagnosisDate);
             this.endDate = new SimpleStringProperty(endDate);
 
@@ -267,6 +291,10 @@ public class HealthRecordsController implements Initializable {
 
         public String getDisease() {
             return disease.get();
+        }
+
+        public String getPrescription() {
+            return prescription.get();
         }
 
         public String getDiagnosisDate() {

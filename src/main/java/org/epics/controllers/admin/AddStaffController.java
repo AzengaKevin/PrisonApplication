@@ -26,7 +26,6 @@ import java.util.concurrent.Executors;
 
 public class AddStaffController implements Initializable {
 
-    private Datasource datasource;
 
     @FXML
     private AnchorPane rootPane;
@@ -43,7 +42,9 @@ public class AddStaffController implements Initializable {
     @FXML
     private ComboBox<String> roleField;
 
+    private Datasource datasource;
     private Executor executor;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
