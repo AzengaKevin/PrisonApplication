@@ -57,5 +57,6 @@ public abstract class UserEntity implements Serializable {
 
     public void addHealthRecord(HealthRecordEntity healthRecordEntity) {
         healthRecordEntityList.add(healthRecordEntity);
+        healthRecordEntity.setUserEntity(this);
     }
 }

@@ -24,8 +24,12 @@ public class HealthRecordEntity implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date endDate;
 
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
+
+    public HealthRecordEntity() {
+    }
 
     public HealthRecordEntity(String disease, String prescription, Date diagnosisDate, Date endDate) {
         this.disease = disease;
