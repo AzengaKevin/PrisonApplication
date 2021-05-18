@@ -8,6 +8,12 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries({
+        @NamedQuery(
+                name = "UserEntity.searchByName",
+                query = "SELECT u FROM UserEntity u WHERE u.name LIKE :query"
+        )
+})
 public abstract class UserEntity implements Serializable {
 
     @Id

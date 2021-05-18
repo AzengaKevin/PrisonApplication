@@ -24,6 +24,12 @@ public class UserRepository {
         return Optional.empty();
     }
 
+    public List<UserEntity> searchByName(String query) {
+        return entityManager.createNamedQuery("UserEntity.searchByName", UserEntity.class)
+                .setParameter("query", "%" + query + "%")
+                .getResultList();
+    }
+
 
     /**
      * Retrieve all users from the database

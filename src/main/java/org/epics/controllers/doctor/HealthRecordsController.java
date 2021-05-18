@@ -120,6 +120,50 @@ public class HealthRecordsController implements Initializable {
 
             AlertHelper.showInformationAlert("Prescription", healthRecord.getPrescription());
         });
+
+        searchUserButton.setOnAction(event -> {
+
+            String query = searchNameField.getText();
+
+            if (query.isEmpty()) {
+                AlertHelper.showErrorAlert("Search User", "No search query");
+                return;
+            }
+
+            searchUser(query);
+
+        });
+    }
+
+    private void searchUser(String query) {
+        Task<List<UserEntity>> retrieveUsersTask = new Task<>() {
+            @Override
+            protected List<UserEntity> call() throws Exception {
+
+                UserRepository userRepository = new UserRepository(datasource.getEntityManager());
+
+                return userRepository.searchByName(query);
+            }
+        };
+
+        retrieveUsersTask.setOnFailed(event -> {
+            Log.error(getClass().getSimpleName(), "retrieveAndShowUsers:failed", event.getSource().getException());
+            AlertHelper.showErrorAlert("Retrieving and Showing User", event.getSource().getException().getLocalizedMessage());
+        });
+
+        retrieveUsersTask.setOnSucceeded(event -> {
+            List<UserEntity> userEntityList = (List<UserEntity>) event.getSource().getValue();
+
+            List<User> userList = userEntityList.stream().map(userEntity -> new User(
+                    userEntity.getId(),
+                    userEntity.getName(),
+                    userEntity.getGroup()
+            )).toList();
+
+            usersTable.setItems(FXCollections.observableArrayList(userList));
+        });
+
+        executor.execute(retrieveUsersTask);
     }
 
     private void showCurrentUserHealthRecords() {
