@@ -1,4 +1,4 @@
-package org.epics.controllers.warden;
+package org.epics.controllers.guard;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,8 +28,8 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        visitorsButton.setOnAction(event -> launchStage("/layouts/warden/Visitors.fxml", "Visitors | Prison Management Software"));
-        inmateButton.setOnAction(event -> launchStage("/layouts/warden/Inmates.fxml", "Inmates | Prison Management Software"));
+        visitorsButton.setOnAction(event -> launchStage("/layouts/guard/Visitors.fxml", "Visitors | Prison Management Software"));
+        inmateButton.setOnAction(event -> launchStage("/layouts/guard/Inmates.fxml", "Inmates | Prison Management Software"));
 
         logoutButton.setOnAction(event -> {
             AuthHelper.logoutStaff();

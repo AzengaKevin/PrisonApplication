@@ -109,7 +109,7 @@ public class LoginController implements Initializable {
 
                             case Doctor -> changeStage("/layouts/doctor/Dashboard.fxml", "Doctor Dashboard | Prison Management System");
 
-                            case Warden -> changeStage("/layouts/warden/Dashboard.fxml", "Warden Dashboard | Prison Management System");
+                            case Guard -> changeStage("/layouts/guard/Dashboard.fxml", "Warden Dashboard | Prison Management System");
 
                             default -> System.out.println("No Idea Which Stuff You're");
                         }

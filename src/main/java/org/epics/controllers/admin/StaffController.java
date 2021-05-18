@@ -136,7 +136,7 @@ public class StaffController implements Initializable {
             protected List<StaffEntity> call() throws Exception {
 
                 StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
-                return staffRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.Warden));
+                return staffRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.Guard));
             }
         };
 

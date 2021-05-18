@@ -5,9 +5,9 @@ import java.util.Arrays;
 public enum Role {
     Admin("admin"),
     Doctor("doctor"),
-    Warden("warden");
+    Guard("guard");
 
-    private String slug;
+    private final String slug;
 
     Role(String slug) {
         this.slug = slug;

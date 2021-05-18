@@ -1,4 +1,4 @@
-package org.epics.controllers.warden;
+package org.epics.controllers.guard;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

@@ -1,4 +1,4 @@
-package org.epics.controllers.warden;
+package org.epics.controllers.guard;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -74,7 +74,7 @@ public class VisitorsController implements Initializable {
 
         bindColumns();
 
-        addVisitorButton.setOnAction(event -> launchStage("/layouts/warden/AddVisitor.fxml", "Add Visitor | Prison Management Software"));
+        addVisitorButton.setOnAction(event -> launchStage("/layouts/guard/AddVisitor.fxml", "Add Visitor | Prison Management Software"));
 
         retrieveAndShowAllVisitors();
 
