@@ -4,12 +4,18 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.epics.data.Datasource;
 import org.epics.data.entities.InmateEntity;
 import org.epics.data.entities.Task;
@@ -18,6 +24,7 @@ import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -25,7 +32,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class TaskManagementController implements Initializable {
-
 
     @FXML
     private AnchorPane rootPane;
@@ -36,6 +42,11 @@ public class TaskManagementController implements Initializable {
     private TableColumn<InmateItem, String> inmateCol;
     @FXML
     private MenuItem viewTasksMenuItem;
+    @FXML
+    private MenuItem assignTaskMenuItem;
+
+    @FXML
+    private Button assignTaskButton;
 
     @FXML
     private TableView<TaskItem> inmateTaskTable;
@@ -45,6 +56,7 @@ public class TaskManagementController implements Initializable {
     private TableColumn<TaskItem, String> descriptionCol;
     @FXML
     private TableColumn<TaskItem, String> statusCol;
+
 
     private Datasource datasource;
     private Executor executor;
@@ -75,6 +87,57 @@ public class TaskManagementController implements Initializable {
             handleShowInmateTasks();
 
         });
+
+        assignTaskMenuItem.setOnAction(event -> {
+
+            inmateItem = inmatesTable.getSelectionModel().getSelectedItem();
+
+            assignInmateTaskHandler();
+
+        });
+
+        assignTaskButton.setOnAction(event -> assignInmateTaskHandler());
+
+    }
+
+    private void assignInmateTaskHandler() {
+
+        if (inmateItem != null) {
+
+            try {
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/layouts/admin/AssignTask.fxml"));
+
+                Parent root = loader.load();
+
+                AssignTaskController controller = loader.getController();
+
+                controller.setInmateEntity(inmateItem.getId());
+
+                Stage stage = new Stage();
+                stage.setTitle("Assign Task | Prison Management Software");
+
+                Scene scene = new Scene(root);
+
+                scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
+
+                stage.setScene(scene);
+
+                stage.setOnCloseRequest(event -> handleShowInmateTasks());
+
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.initOwner(rootPane.getScene().getWindow());
+
+                stage.show();
+
+
+            } catch (Exception exception) {
+
+                Log.error(getClass().getSimpleName(), "assignInmateTaskHandler", exception);
+
+            }
+        }
+
     }
 
     private void handleShowInmateTasks() {
@@ -175,7 +238,7 @@ public class TaskManagementController implements Initializable {
         public TaskItem(Task task) {
             this.title = new SimpleStringProperty(task.getTitle());
             this.description = new SimpleStringProperty(task.getDescription());
-            this.status = new SimpleStringProperty("Not Completed");
+            this.status = new SimpleStringProperty(task.getEndDate().before(new Date()) ? "Not Completed" : "Completed");
         }
 
         public String getTitle() {
@@ -190,4 +253,5 @@ public class TaskManagementController implements Initializable {
             return status.get();
         }
     }
+
 }

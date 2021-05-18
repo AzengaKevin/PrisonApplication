@@ -51,6 +51,7 @@
                         <TableColumn fx:id="caseNumberCol" prefWidth="75.0" text="Case Number"/>
                         <TableColumn fx:id="convictionDateCol" prefWidth="75.0" text="Conviction Date"/>
                         <TableColumn fx:id="releaseDateCol" prefWidth="75.0" text="Release Date"/>
+                        <TableColumn fx:id="statusCol" prefWidth="75.0" text="Status"/>
                     </columns>
                     <VBox.margin>
                         <Insets bottom="16.0" left="16.0" right="16.0" top="8.0"/>

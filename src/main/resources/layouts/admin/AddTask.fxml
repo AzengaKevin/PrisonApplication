@@ -11,7 +11,7 @@
 
 <AnchorPane fx:id="rootPane" prefHeight="325.0" prefWidth="360.0" stylesheets="@../../styles/master.css"
             xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.epics.controllers.taskManager.AddTaskController">
+            fx:controller="org.epics.controllers.admin.AddTaskController">
     <children>
         <VBox layoutX="26.0" layoutY="51.0" prefHeight="400.0" prefWidth="600.0" spacing="16.0"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"

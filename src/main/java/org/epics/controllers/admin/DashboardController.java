@@ -17,6 +17,8 @@ import java.util.ResourceBundle;
 public class DashboardController implements Initializable {
 
     @FXML
+    private Button tasksButton;
+    @FXML
     private AnchorPane rootPane;
     @FXML
     private Button staffButton;
@@ -33,11 +35,11 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         staffButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Staff.fxml", "Staff | Prison Management Software"));
         inmatesButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Inmates.fxml", "Inmates | Prison Management Software"));
         visitorsButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Visitors.fxml", "Visitors | Prison Management Software"));
         healthRecordsButton.setOnAction(actionEvent -> launchStage("/layouts/admin/HealthRecords.fxml", "Health Records | Prison Management Software"));
+        tasksButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Tasks.fxml", "Tasks | Prison Management Software"));
         taskManagementButton.setOnAction(actionEvent -> launchStage("/layouts/admin/TaskManagement.fxml", "Task Management | Prison Management Software"));
         settingButton.setOnAction(actionEvent -> launchStage("/layouts/Settings.fxml", "Settings | Prison Management Software"));
     }

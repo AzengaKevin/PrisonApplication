@@ -1,4 +1,4 @@
-package org.epics.controllers.taskManager;
+package org.epics.controllers.admin;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -66,7 +66,7 @@ public class TasksController implements Initializable {
     private void launchAddTaskWindow() {
         try {
 
-            Parent parent = FXMLLoader.load(getClass().getResource("/layouts/taskManager/AddTask.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/layouts/admin/AddTask.fxml"));
 
             Stage stage = new Stage();
             stage.setTitle("Add Inmate | Prison Management Software");

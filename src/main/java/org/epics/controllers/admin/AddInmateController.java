@@ -122,6 +122,18 @@ public class AddInmateController implements Initializable {
         Instant releaseInstant = Instant.from(releaseLocalDate.atStartOfDay(ZoneId.systemDefault()));
         Date releaseDate = Date.from(releaseInstant);
 
+        if (convictionDate.before(dob)) {
+            AlertHelper.showErrorAlert("Adding Inmate", "The Inmate is not yet born");
+            dobField.requestFocus();
+            return;
+        }
+
+        if (releaseDate.before(convictionDate)) {
+            AlertHelper.showErrorAlert("Adding Inmate", "The release date can not be before the conviction date");
+            releaseDateField.requestFocus();
+            return;
+        }
+
         InmateEntity inmateEntity = new InmateEntity(name, caseNumber, Gender.fromString(gender), null, dob, convictionDate, releaseDate);
 
         Task<InmateEntity> addInmateEntityTask = new Task<>() {
@@ -161,7 +173,6 @@ public class AddInmateController implements Initializable {
 
     public void closeStage() {
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        //stage.getOnCloseRequest().notify();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 }

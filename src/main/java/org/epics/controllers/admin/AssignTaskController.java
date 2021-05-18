@@ -1,4 +1,4 @@
-package org.epics.controllers.taskManager;
+package org.epics.controllers.admin;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

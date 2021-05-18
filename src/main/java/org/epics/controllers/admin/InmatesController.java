@@ -25,6 +25,7 @@ import org.epics.helpers.Log;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -41,23 +42,25 @@ public class InmatesController implements Initializable {
     @FXML
     private ProgressIndicator inmateProgressIndicator;
     @FXML
-    private TableView<Inmate> inmatesTable;
+    private TableView<InmateItem> inmatesTable;
     @FXML
-    private TableColumn<Inmate, Integer> idCol;
+    private TableColumn<InmateItem, Integer> idCol;
     @FXML
-    private TableColumn<Inmate, String> nameCol;
+    private TableColumn<InmateItem, String> nameCol;
     @FXML
-    private TableColumn<Inmate, String> caseNumberCol;
+    private TableColumn<InmateItem, String> caseNumberCol;
     @FXML
-    private TableColumn<Inmate, String> convictionDateCol;
+    private TableColumn<InmateItem, String> convictionDateCol;
     @FXML
-    private TableColumn<Inmate, String> releaseDateCol;
+    private TableColumn<InmateItem, String> releaseDateCol;
     @FXML
-    private TableColumn<Inmate, String> dateOfBirthCol;
+    private TableColumn<InmateItem, String> dateOfBirthCol;
+    @FXML
+    private TableColumn<InmateItem, String> statusCol;
 
     private Executor executor;
     private Datasource datasource;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -100,18 +103,9 @@ public class InmatesController implements Initializable {
 
             List<InmateEntity> inmateEntityList = (List<InmateEntity>) workerStateEvent.getSource().getValue();
 
-            List<Inmate> inmateList = inmateEntityList.stream().map(
-                    inmateEntity -> new Inmate(
-                            inmateEntity.getId(),
-                            inmateEntity.getName(),
-                            inmateEntity.getCaseNumber(),
-                            dateFormat.format(inmateEntity.getDateOfBirth()),
-                            dateFormat.format(inmateEntity.getConvictionDate()),
-                            dateFormat.format(inmateEntity.getReleaseDate())
-                    )
-            ).toList();
+            List<InmateItem> inmateItemList = inmateEntityList.stream().map(InmateItem::new).toList();
 
-            inmatesTable.setItems(FXCollections.observableArrayList(inmateList));
+            inmatesTable.setItems(FXCollections.observableArrayList(inmateItemList));
         });
 
         inmateProgressIndicator.setVisible(true);
@@ -125,6 +119,7 @@ public class InmatesController implements Initializable {
         dateOfBirthCol.setCellValueFactory(new PropertyValueFactory<>("dateOfBirth"));
         convictionDateCol.setCellValueFactory(new PropertyValueFactory<>("convictionDate"));
         releaseDateCol.setCellValueFactory(new PropertyValueFactory<>("releaseDate"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
     }
 
 
@@ -153,7 +148,7 @@ public class InmatesController implements Initializable {
         }
     }
 
-    public static class Inmate {
+    public static class InmateItem {
 
         final private SimpleIntegerProperty id;
         final private SimpleStringProperty name;
@@ -161,14 +156,16 @@ public class InmatesController implements Initializable {
         final private SimpleStringProperty dateOfBirth;
         final private SimpleStringProperty convictionDate;
         final private SimpleStringProperty releaseDate;
+        final private SimpleStringProperty status;
 
-        public Inmate(int id, String name, String caseNumber, String dateOfBirth, String convictionDate, String releaseDate) {
-            this.id = new SimpleIntegerProperty(id);
-            this.name = new SimpleStringProperty(name);
-            this.caseNumber = new SimpleStringProperty(caseNumber);
-            this.dateOfBirth = new SimpleStringProperty(dateOfBirth);
-            this.convictionDate = new SimpleStringProperty(convictionDate);
-            this.releaseDate = new SimpleStringProperty(releaseDate);
+        public InmateItem(InmateEntity inmateEntity) {
+            this.id = new SimpleIntegerProperty(inmateEntity.getId());
+            this.name = new SimpleStringProperty(inmateEntity.getName());
+            this.caseNumber = new SimpleStringProperty(inmateEntity.getCaseNumber());
+            this.dateOfBirth = new SimpleStringProperty(dateFormat.format(inmateEntity.getDateOfBirth()));
+            this.convictionDate = new SimpleStringProperty(dateFormat.format(inmateEntity.getConvictionDate()));
+            this.releaseDate = new SimpleStringProperty(dateFormat.format(inmateEntity.getReleaseDate()));
+            this.status = new SimpleStringProperty(inmateEntity.getReleaseDate().before(new Date()) ? "Released" : "Behind Bars");
         }
 
 
@@ -198,6 +195,10 @@ public class InmatesController implements Initializable {
 
         public SimpleStringProperty releaseDateProperty() {
             return releaseDate;
+        }
+
+        public String getStatus() {
+            return status.get();
         }
     }
 }

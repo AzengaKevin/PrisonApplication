@@ -5,7 +5,6 @@ import java.util.Arrays;
 public enum Role {
     Admin("admin"),
     Doctor("doctor"),
-    TaskManager("task-manager"),
     Warden("warden");
 
     private String slug;
