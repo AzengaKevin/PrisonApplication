@@ -31,7 +31,6 @@ public class HealthRecordsController implements Initializable {
     public TableView<HealthRecord> healthRecordsTable;
     public TableColumn<HealthRecord, String> diseaseCol;
     public TableColumn<HealthRecord, String> diagnosisDateCol;
-    public TableColumn<HealthRecord, String> endDateCol;
 
     public MenuItem showRecordMenuItem;
     public MenuItem checkDescriptionMenuItem;
@@ -98,8 +97,7 @@ public class HealthRecordsController implements Initializable {
                 List<HealthRecord> healthRecordList = healthRecordEntityList.stream()
                         .map(healthRecordEntity -> new HealthRecord(
                                 healthRecordEntity.getDisease(),
-                                dateFormat.format(healthRecordEntity.getDiagnosisDate()),
-                                dateFormat.format(healthRecordEntity.getEndDate())
+                                dateFormat.format(healthRecordEntity.getDiagnosisDate())
                         )).toList();
 
                 healthRecordsTable.setItems(FXCollections.observableArrayList(healthRecordList));
@@ -116,7 +114,6 @@ public class HealthRecordsController implements Initializable {
         //Health Records Table
         diseaseCol.setCellValueFactory(new PropertyValueFactory<>("disease"));
         diagnosisDateCol.setCellValueFactory(new PropertyValueFactory<>("diagnosisDate"));
-        endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
     }
 
 
@@ -180,15 +177,13 @@ public class HealthRecordsController implements Initializable {
 
     public static class HealthRecord {
 
-        private SimpleStringProperty disease;
-        private SimpleStringProperty diagnosisDate;
-        private SimpleStringProperty endDate;
+        private final SimpleStringProperty disease;
+        private final SimpleStringProperty diagnosisDate;
 
-        public HealthRecord(String disease, String diagnosisDate, String endDate) {
+        public HealthRecord(String disease, String diagnosisDate) {
 
             this.disease = new SimpleStringProperty(disease);
             this.diagnosisDate = new SimpleStringProperty(diagnosisDate);
-            this.endDate = new SimpleStringProperty(endDate);
 
         }
 
@@ -200,9 +195,6 @@ public class HealthRecordsController implements Initializable {
             return diagnosisDate.get();
         }
 
-        public String getEndDate() {
-            return endDate.get();
-        }
     }
 
 }

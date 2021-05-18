@@ -70,6 +70,16 @@ public class StaffRepository {
         return Optional.of(userEntity);
     }
 
+    public void delete(StaffEntity staffEntity) {
+
+        entityManager.getTransaction().begin();
+
+        entityManager.remove(staffEntity);
+
+        entityManager.getTransaction().commit();
+
+    }
+
     /**
      * Updates or inserts a User in to the database
      *

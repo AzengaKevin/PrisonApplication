@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
@@ -32,7 +33,6 @@
                     <columns>
                         <TableColumn fx:id="diseaseCol" prefWidth="75.0" text="Disease"/>
                         <TableColumn fx:id="diagnosisDateCol" prefWidth="75.0" text="Diagnosis Date"/>
-                        <TableColumn fx:id="endDateCol" prefWidth="75.0" text="End Date"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -40,6 +40,9 @@
                     <contextMenu>
                         <ContextMenu/>
                     </contextMenu>
+                    <HBox.margin>
+                        <Insets left="8.0"/>
+                    </HBox.margin>
                 </TableView>
             </children>
         </HBox>

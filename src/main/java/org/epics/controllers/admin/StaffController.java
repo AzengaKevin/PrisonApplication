@@ -9,10 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -21,6 +18,7 @@ import org.epics.data.Datasource;
 import org.epics.data.entities.StaffEntity;
 import org.epics.data.enums.Role;
 import org.epics.data.repositories.StaffRepository;
+import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
 
 import java.net.URL;
@@ -48,9 +46,9 @@ public class StaffController implements Initializable {
     @FXML
     private TableColumn<User, String> roleCol;
     @FXML
-    private TableColumn<User, String> passwordCol;
-    @FXML
     private AnchorPane rootPane;
+    @FXML
+    private MenuItem deleteMemberMenuItem;
 
     private Executor executor;
 
@@ -72,6 +70,39 @@ public class StaffController implements Initializable {
         retrieveAndShowStaff();
 
         addStaffMember.setOnAction(event -> launchAddStaffStage());
+
+        deleteMemberMenuItem.setOnAction(event -> {
+            User user = staffMembersTable.getSelectionModel().getSelectedItem();
+
+            if (user == null) return;
+
+            Task<StaffEntity> retrieveStaff = new Task<>() {
+                @Override
+                protected StaffEntity call() throws Exception {
+                    StaffRepository repository = new StaffRepository(datasource.getEntityManager());
+                    return repository.findById(user.getId()).orElseThrow(IllegalAccessError::new);
+                }
+            };
+
+            retrieveStaff.setOnFailed(workerStateEvent -> {
+                Log.error(getClass().getSimpleName(), "initialize", workerStateEvent.getSource().getException());
+                AlertHelper.showErrorAlert("Deleting Staff", "Error deleting Staff Member, check logs");
+            });
+
+            retrieveStaff.setOnSucceeded(workerStateEvent -> {
+
+                StaffRepository repository = new StaffRepository(datasource.getEntityManager());
+
+                StaffEntity staffEntity = (StaffEntity) workerStateEvent.getSource().getValue();
+
+                repository.delete(staffEntity);
+
+                retrieveAndShowStaff();
+
+            });
+
+            executor.execute(retrieveStaff);
+        });
     }
 
     private void launchAddStaffStage() {
@@ -127,8 +158,7 @@ public class StaffController implements Initializable {
                             staffEntity.getId(),
                             staffEntity.getName(),
                             staffEntity.getUsername(),
-                            staffEntity.getRole(),
-                            staffEntity.getPassword()
+                            staffEntity.getRole()
                     )
             ).toList();
 
@@ -144,7 +174,6 @@ public class StaffController implements Initializable {
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         roleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
-        passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
     }
 
     public static class User {
@@ -153,13 +182,11 @@ public class StaffController implements Initializable {
         private final SimpleStringProperty name;
         private final SimpleStringProperty username;
         private final SimpleStringProperty role;
-        private final SimpleStringProperty password;
 
-        public User(int id, String name, String username, Role role, String password) {
+        public User(int id, String name, String username, Role role) {
             this.id = new SimpleIntegerProperty(id);
             this.name = new SimpleStringProperty(name);
             this.username = new SimpleStringProperty(username);
-            this.password = new SimpleStringProperty(password);
             this.role = new SimpleStringProperty(role.getSlug());
         }
 
@@ -174,10 +201,6 @@ public class StaffController implements Initializable {
 
         public String getUsername() {
             return username.get();
-        }
-
-        public String getPassword() {
-            return password.get();
         }
 
         public String getRole() {

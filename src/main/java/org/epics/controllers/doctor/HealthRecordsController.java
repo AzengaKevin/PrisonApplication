@@ -50,8 +50,6 @@ public class HealthRecordsController implements Initializable {
     private TableColumn<HealthRecord, String> diseaseCol;
     @FXML
     private TableColumn<HealthRecord, String> diagnosisDateCol;
-    @FXML
-    private TableColumn<HealthRecord, String> endDateCol;
 
     @FXML
     private MenuItem addRecordMenuItem;
@@ -152,8 +150,7 @@ public class HealthRecordsController implements Initializable {
                         .map(healthRecordEntity -> new HealthRecord(
                                 healthRecordEntity.getDisease(),
                                 healthRecordEntity.getPrescription(),
-                                dateFormat.format(healthRecordEntity.getDiagnosisDate()),
-                                dateFormat.format(healthRecordEntity.getEndDate())
+                                dateFormat.format(healthRecordEntity.getDiagnosisDate())
                         )).toList();
 
                 healthRecordsTable.setItems(FXCollections.observableArrayList(healthRecordList));
@@ -170,7 +167,6 @@ public class HealthRecordsController implements Initializable {
         //Health Records Table
         diseaseCol.setCellValueFactory(new PropertyValueFactory<>("disease"));
         diagnosisDateCol.setCellValueFactory(new PropertyValueFactory<>("diagnosisDate"));
-        endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
     }
 
     private void handleAddHealthRecord() {
@@ -275,17 +271,15 @@ public class HealthRecordsController implements Initializable {
 
     public static class HealthRecord {
 
-        private SimpleStringProperty disease;
-        private SimpleStringProperty prescription;
-        private SimpleStringProperty diagnosisDate;
-        private SimpleStringProperty endDate;
+        private final SimpleStringProperty disease;
+        private final SimpleStringProperty prescription;
+        private final SimpleStringProperty diagnosisDate;
 
-        public HealthRecord(String disease, String prescription, String diagnosisDate, String endDate) {
+        public HealthRecord(String disease, String prescription, String diagnosisDate) {
 
             this.disease = new SimpleStringProperty(disease);
             this.prescription = new SimpleStringProperty(prescription);
             this.diagnosisDate = new SimpleStringProperty(diagnosisDate);
-            this.endDate = new SimpleStringProperty(endDate);
 
         }
 
@@ -301,8 +295,5 @@ public class HealthRecordsController implements Initializable {
             return diagnosisDate.get();
         }
 
-        public String getEndDate() {
-            return endDate.get();
-        }
     }
 }

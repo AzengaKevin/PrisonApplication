@@ -1,6 +1,7 @@
 package org.epics.controllers.doctor;
 
 import javafx.concurrent.Task;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -27,16 +28,20 @@ import java.util.concurrent.Executors;
 
 public class AddHealthRecordController implements Initializable {
 
-    public AnchorPane rootPane;
-    public TextField diseaseField;
-    public DatePicker diagnosisDateField;
-    public DatePicker endDateField;
-    public TextArea prescriptionField;
-    public Button cancelButton;
-    public Button submitButton;
+    @FXML
+    private AnchorPane rootPane;
+    @FXML
+    private TextField diseaseField;
+    @FXML
+    private DatePicker diagnosisDateField;
+    @FXML
+    private TextArea prescriptionField;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button submitButton;
 
     private UserEntity userEntity;
-    private HealthRecordEntity healthRecordEntity;
 
     private Datasource datasource;
     private Executor executor;
@@ -54,6 +59,8 @@ public class AddHealthRecordController implements Initializable {
 
         submitButton.setOnAction(event -> handAddUserHealthRecord());
 
+        cancelButton.setOnAction(event -> closeStage());
+
     }
 
     private void handAddUserHealthRecord() {
@@ -65,8 +72,14 @@ public class AddHealthRecordController implements Initializable {
 
         String disease = diseaseField.getText();
         String prescription = prescriptionField.getText();
+        String diagnosisDateStr = diagnosisDateField.getEditor().getText();
 
-        Date diagnosisDate = null, endDate = null;
+        if (disease.isEmpty() || prescription.isEmpty() || diagnosisDateStr.isEmpty()) {
+            AlertHelper.showErrorAlert("Adding Health Record", "All fields are required");
+            return;
+        }
+
+        Date diagnosisDate = null;
 
         if (!diagnosisDateField.getEditor().getText().isEmpty()) {
 
@@ -75,14 +88,7 @@ public class AddHealthRecordController implements Initializable {
             diagnosisDate = Date.from(dobInstant);
         }
 
-        if (!endDateField.getEditor().getText().isEmpty()) {
-
-            LocalDate dobLocalDate = endDateField.getValue();
-            Instant dobInstant = Instant.from(dobLocalDate.atStartOfDay(ZoneId.systemDefault()));
-            endDate = Date.from(dobInstant);
-        }
-
-        userEntity.addHealthRecord(new HealthRecordEntity(disease, prescription, diagnosisDate, endDate));
+        userEntity.addHealthRecord(new HealthRecordEntity(disease, prescription, diagnosisDate, null));
 
         Task<UserEntity> addHealthRecordTask = new Task<>() {
             @Override
@@ -110,7 +116,6 @@ public class AddHealthRecordController implements Initializable {
 
     public void closeStage() {
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        //stage.getOnCloseRequest().notify();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 

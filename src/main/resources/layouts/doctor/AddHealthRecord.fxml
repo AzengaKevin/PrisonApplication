@@ -9,32 +9,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="338.0" stylesheets="@../../styles/master.css"
-            xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.epics.controllers.doctor.AddHealthRecordController">
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="338.0" stylesheets="@../../styles/master.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.epics.controllers.doctor.AddHealthRecordController">
     <children>
-        <VBox layoutX="82.0" layoutY="33.0" prefHeight="440.0" prefWidth="360.0" spacing="16.0"
-              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+        <VBox layoutX="82.0" layoutY="33.0" prefHeight="440.0" prefWidth="360.0" spacing="16.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <TextField fx:id="diseaseField" maxWidth="320.0" minWidth="320.0" prefWidth="320.0"
-                           promptText="Disease"/>
-                <DatePicker fx:id="diagnosisDateField" maxWidth="320.0" minWidth="320.0" prefWidth="320.0"
-                            promptText="Diagnosis Date"/>
-                <DatePicker fx:id="endDateField" maxWidth="320.0" minWidth="320.0" prefWidth="320.0"
-                            promptText="End Date"/>
-                <TextArea fx:id="prescriptionField" maxHeight="200.0" maxWidth="320.0" minHeight="200.0"
-                          minWidth="320.0" prefHeight="200.0" prefWidth="320.0" promptText="Prescription"/>
+                <TextField fx:id="diseaseField" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" promptText="Disease" />
+                <DatePicker fx:id="diagnosisDateField" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" promptText="Diagnosis Date" />
+                <TextArea fx:id="prescriptionField" maxHeight="200.0" maxWidth="320.0" minHeight="200.0" minWidth="320.0" prefHeight="200.0" prefWidth="320.0" promptText="Prescription" />
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="32.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
-                        <Button fx:id="submitButton" mnemonicParsing="false" styleClass="btn-primary" text="Submit"/>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" />
+                        <Button fx:id="submitButton" mnemonicParsing="false" styleClass="btn-primary" text="Submit" />
                     </children>
                 </HBox>
             </children>
             <padding>
-                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
             </padding>
         </VBox>
     </children>
