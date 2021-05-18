@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.epics.helpers.AuthHelper;
 import org.epics.helpers.Log;
 
 import java.net.URL;
@@ -16,6 +17,8 @@ import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
 
+    @FXML
+    private Button logoutButton;
     @FXML
     private Button tasksButton;
     @FXML
@@ -42,6 +45,18 @@ public class DashboardController implements Initializable {
         tasksButton.setOnAction(actionEvent -> launchStage("/layouts/admin/Tasks.fxml", "Tasks | Prison Management Software"));
         taskManagementButton.setOnAction(actionEvent -> launchStage("/layouts/admin/TaskManagement.fxml", "Task Management | Prison Management Software"));
         settingButton.setOnAction(actionEvent -> launchStage("/layouts/Settings.fxml", "Settings | Prison Management Software"));
+
+        logoutButton.setOnAction(event -> {
+            AuthHelper.logoutStaff();
+
+            try {
+                changeStage("/layouts/Login.fxml", "Login | Prison Management System");
+            } catch (Exception exception) {
+
+                Log.error(getClass().getSimpleName(), "initialize", exception);
+            }
+
+        });
     }
 
 
@@ -67,5 +82,23 @@ public class DashboardController implements Initializable {
         } catch (Exception exception) {
             Log.error(getClass().getSimpleName(), "launchStage", exception);
         }
+    }
+
+
+    public void changeStage(String location, String title) throws Exception {
+
+        Parent parent = FXMLLoader.load(getClass().getResource(location));
+
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        Scene scene = new Scene(parent);
+
+        scene.getStylesheets().addAll(this.getClass().getResource("/styles/master.css").toExternalForm());
+
+        stage.setScene(scene);
+
+        ((Stage) rootPane.getScene().getWindow()).close();
+
+        stage.show();
     }
 }

@@ -22,6 +22,11 @@
     -fx-text-fill: -fx-white-color;
 }
 
+.btn-danger{
+    -fx-background-color: -fx-danger-color;
+    -fx-text-fill: -fx-white-color;
+}
+
 .bg-black-50{
     -fx-background-color: rgba(0, 0, 0, 0.5)
 }
