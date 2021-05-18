@@ -11,50 +11,57 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="rootPane" prefHeight="480.0" prefWidth="720.0" stylesheets="@../../styles/master.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.epics.controllers.admin.InmatesController">
+<AnchorPane fx:id="rootPane" prefHeight="480.0" prefWidth="720.0" stylesheets="@../../styles/master.css"
+            xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.epics.controllers.admin.InmatesController">
     <children>
-        <VBox prefHeight="480.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox prefHeight="480.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <VBox prefHeight="80.0" prefWidth="100.0" styleClass="bg-primary">
                     <children>
                         <Label styleClass="text-white" text="Prison Management Software">
                             <font>
-                                <Font name="System Bold" size="18.0" />
+                                <Font name="System Bold" size="18.0"/>
                             </font>
                         </Label>
-                        <Label styleClass="text-white-50" text="Inmates" />
+                        <Label styleClass="text-white-50" text="Inmates"/>
                     </children>
                     <padding>
-                        <Insets left="16.0" top="16.0" />
+                        <Insets left="16.0" top="16.0"/>
                     </padding>
                 </VBox>
                 <AnchorPane prefHeight="48.0">
                     <children>
-                        <Button fx:id="addInmateButton" layoutX="16.0" layoutY="8.0" mnemonicParsing="false" text="Add Inmate" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="12.5">
+                        <Button fx:id="addInmateButton" layoutX="16.0" layoutY="8.0" mnemonicParsing="false"
+                                text="Add Inmate" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="12.5">
                             <graphic>
-                                <FontIcon iconLiteral="fa-plus" />
+                                <FontIcon iconLiteral="fa-plus"/>
                             </graphic>
                         </Button>
-                        <ProgressIndicator fx:id="inmateProgressIndicator" prefHeight="32.0" prefWidth="32.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="8.0" />
+                        <ProgressIndicator fx:id="inmateProgressIndicator" prefHeight="32.0" prefWidth="32.0"
+                                           AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="8.0"/>
+                        <Button fx:id="printInmatesButton" layoutX="108.0" layoutY="13.0" mnemonicParsing="false"
+                                text="Print Inmates" AnchorPane.leftAnchor="120.0"/>
                     </children>
                 </AnchorPane>
                 <TableView fx:id="inmatesTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="idCol" prefWidth="75.0" text="ID" />
-                        <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name" />
-                        <TableColumn fx:id="dateOfBirthCol" prefWidth="75.0" text="Age" />
-                        <TableColumn fx:id="caseNumberCol" prefWidth="75.0" text="Case Number" />
-                        <TableColumn fx:id="convictionDateCol" prefWidth="75.0" text="Conviction Date" />
-                        <TableColumn fx:id="releaseDateCol" prefWidth="75.0" text="Release Date" />
-                        <TableColumn fx:id="statusCol" prefWidth="75.0" text="Status" />
-                  <TableColumn fx:id="blockCol" prefWidth="75.0" text="Block" />
-                  <TableColumn fx:id="cellCol" prefWidth="75.0" text="Cell" />
+                        <TableColumn fx:id="idCol" prefWidth="75.0" text="ID"/>
+                        <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name"/>
+                        <TableColumn fx:id="dateOfBirthCol" prefWidth="75.0" text="Age"/>
+                        <TableColumn fx:id="caseNumberCol" prefWidth="75.0" text="Case Number"/>
+                        <TableColumn fx:id="convictionDateCol" prefWidth="75.0" text="Conviction Date"/>
+                        <TableColumn fx:id="releaseDateCol" prefWidth="75.0" text="Release Date"/>
+                        <TableColumn fx:id="statusCol" prefWidth="75.0" text="Status"/>
+                        <TableColumn fx:id="blockCol" prefWidth="75.0" text="Block"/>
+                        <TableColumn fx:id="cellCol" prefWidth="75.0" text="Cell"/>
                     </columns>
                     <VBox.margin>
-                        <Insets bottom="16.0" left="16.0" right="16.0" top="8.0" />
+                        <Insets bottom="16.0" left="16.0" right="16.0" top="8.0"/>
                     </VBox.margin>
                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                     </columnResizePolicy>
                 </TableView>
             </children>

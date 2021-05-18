@@ -1,21 +1,28 @@
 package org.epics.controllers.admin;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.element.Table;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import org.epics.data.Datasource;
 import org.epics.data.entities.Visitor;
 import org.epics.data.repositories.VisitorRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
+import org.epics.internals.printing.TablePrinter;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,6 +34,8 @@ import java.util.concurrent.Executors;
 
 public class VisitorsController implements Initializable {
 
+    @FXML
+    private Button printVisitorsButton;
     @FXML
     private AnchorPane rootPane;
     @FXML
@@ -68,6 +77,79 @@ public class VisitorsController implements Initializable {
         bindColumns();
 
         retrieveAndShowAllVisitors();
+
+        printVisitorsButton.setOnAction(event -> handlePrintVisitors());
+    }
+
+    private void handlePrintVisitors() {
+
+        Task<List<Visitor>> retrieveVisitorsTask = new Task<>() {
+            @Override
+            protected List<Visitor> call() throws Exception {
+                VisitorRepository repository = new VisitorRepository(datasource.getEntityManager());
+                return repository.findAll();
+            }
+        };
+
+        retrieveVisitorsTask.setOnFailed(workerStateEvent -> {
+            Log.error(getClass().getSimpleName(), "retrieveAndShowAllVisitors: failed", workerStateEvent.getSource().getException());
+            AlertHelper.showInformationAlert("Get all visitors", "Failed in retrieving users, check the log");
+        });
+
+        retrieveVisitorsTask.setOnSucceeded(workerStateEvent -> {
+            List<Visitor> visitorList = (List<Visitor>) workerStateEvent.getSource().getValue();
+
+            try {
+                //Choose a directory
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Select Location For the Report File");
+                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                final File selectedDir = directoryChooser.showDialog(rootPane.getScene().getWindow());
+
+                //Dynamic filename
+                String filename = selectedDir.getAbsolutePath() + "/" + String.valueOf(System.currentTimeMillis()).concat("-visitors-report.pdf");
+
+                //Create a instance of Table printer passing the filename
+                TablePrinter tablePrinter = new TablePrinter(filename);
+
+                tablePrinter.initDocument(20, PageSize.A4);
+
+                tablePrinter.addTitle("Inmate Visitors");
+
+                Table table = new Table(6);
+
+                //Add the headers
+                table.addHeaderCell("Name");
+                table.addHeaderCell("Gender");
+                table.addHeaderCell("Huduma Number");
+                table.addHeaderCell("Phone");
+                table.addHeaderCell("Inmate");
+                table.addHeaderCell("Date");
+
+                visitorList.forEach(visitor -> {
+                    table.addCell(visitor.getName());
+                    table.addCell(visitor.getGender().toString());
+                    table.addCell(visitor.getHudumaNumber());
+                    table.addCell(visitor.getPhone());
+                    table.addCell(visitor.getInmateEntity().getName());
+                    table.addCell(dateFormatter.format(visitor.getDate()));
+
+                });
+
+                tablePrinter.addBlockElement(table);
+
+                tablePrinter.print();
+
+                AlertHelper.showInformationAlert("Printing", "Report printed Successfully");
+
+            } catch (IOException e) {
+                Log.error(getClass().getSimpleName(), "Printing", e);
+                AlertHelper.showErrorAlert("Printing Stuff", "Printing failed, try again");
+            }
+        });
+
+        executor.execute(retrieveVisitorsTask);
+
     }
 
     private void bindColumns() {

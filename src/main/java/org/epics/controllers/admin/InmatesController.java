@@ -1,5 +1,7 @@
 package org.epics.controllers.admin;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.element.Table;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
@@ -22,7 +25,10 @@ import org.epics.data.entities.InmateEntity;
 import org.epics.data.repositories.InmateRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
+import org.epics.internals.printing.TablePrinter;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +40,8 @@ import java.util.concurrent.Executors;
 
 public class InmatesController implements Initializable {
 
+    @FXML
+    private Button printInmatesButton;
     @FXML
     private AnchorPane rootPane;
     @FXML
@@ -84,6 +92,87 @@ public class InmatesController implements Initializable {
         retrieveAndShowInmates();
 
         addInmateButton.setOnAction(event -> launchAddInmateStage());
+
+        printInmatesButton.setOnAction(event -> handlePrintInmates());
+    }
+
+    private void handlePrintInmates() {
+        inmateProgressIndicator.setVisible(true);
+
+        Task<List<InmateEntity>> retrieveInmatesTask = new Task<>() {
+            @Override
+            protected List<InmateEntity> call() throws Exception {
+
+                InmateRepository inmateRepository = new InmateRepository(datasource.getEntityManager());
+                return inmateRepository.findAll();
+            }
+        };
+
+        retrieveInmatesTask.setOnFailed(workerStateEvent -> {
+            inmateProgressIndicator.setVisible(false);
+            AlertHelper.showErrorAlert("Retrieving Inmates", "A fatal error, occurred check the logs");
+            Log.error(getClass().getSimpleName(), "retrieveAndShowInmates", retrieveInmatesTask.getException());
+        });
+
+        retrieveInmatesTask.setOnSucceeded(workerStateEvent -> {
+
+            List<InmateEntity> inmateEntityList = (List<InmateEntity>) workerStateEvent.getSource().getValue();
+
+            try {
+                //Choose a directory
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Select Location For the Report File");
+                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                final File selectedDir = directoryChooser.showDialog(rootPane.getScene().getWindow());
+
+                //Dynamic filename
+                String filename = selectedDir.getAbsolutePath() + "/" + String.valueOf(System.currentTimeMillis()).concat("-inmates-report.pdf");
+
+                //Create a instance of Table printer passing the filename
+                TablePrinter tablePrinter = new TablePrinter(filename);
+
+                tablePrinter.initDocument(20, PageSize.A4.rotate());
+
+                tablePrinter.addTitle("All Inmates");
+
+                Table table = new Table(7);
+
+                //Add the headers
+                table.addHeaderCell("Name");
+                table.addHeaderCell("Date Of Birth");
+                table.addHeaderCell("Gender");
+                table.addHeaderCell("Block");
+                table.addHeaderCell("Cell");
+                table.addHeaderCell("Conviction Date");
+                table.addHeaderCell("Release Date");
+
+                inmateEntityList.forEach(inmateEntity -> {
+                    table.addCell(inmateEntity.getName());
+                    table.addCell(dateFormat.format(inmateEntity.getDateOfBirth()));
+                    table.addCell(inmateEntity.getGender().toString());
+                    table.addCell(inmateEntity.getBlock());
+                    table.addCell(inmateEntity.getCell());
+                    table.addCell(dateFormat.format(inmateEntity.getConvictionDate()));
+                    table.addCell(dateFormat.format(inmateEntity.getReleaseDate()));
+
+                });
+
+                tablePrinter.addBlockElement(table);
+
+                tablePrinter.print();
+
+                inmateProgressIndicator.setVisible(false);
+
+                AlertHelper.showInformationAlert("Printing", "Report printed Successfully");
+
+            } catch (IOException e) {
+                Log.error(getClass().getSimpleName(), "Printing", e);
+                AlertHelper.showErrorAlert("Printing Stuff", "Printing inmates failed, try again");
+            }
+        });
+
+        inmateProgressIndicator.setVisible(true);
+        executor.execute(retrieveInmatesTask);
     }
 
     private void retrieveAndShowInmates() {

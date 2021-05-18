@@ -1,8 +1,11 @@
 package org.epics.controllers.admin;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.element.Table;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -12,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
@@ -19,7 +23,10 @@ import org.epics.data.entities.Task;
 import org.epics.data.repositories.TaskRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
+import org.epics.internals.printing.TablePrinter;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -30,15 +37,26 @@ import java.util.concurrent.Executors;
 
 public class TasksController implements Initializable {
 
-    public AnchorPane rootPane;
-    public Button addTaskButton;
-    public TableView<TaskItem> tasksTable;
-    public TableColumn<TaskItem, Integer> idCol;
-    public TableColumn<TaskItem, String> titleCol;
-    public TableColumn<TaskItem, String> descriptionCol;
-    public TableColumn<TaskItem, String> startDateCol;
-    public TableColumn<TaskItem, String> endDateCol;
-    public TableColumn<TaskItem, Integer> inmatesCountCol;
+    @FXML
+    private AnchorPane rootPane;
+    @FXML
+    private Button addTaskButton;
+    @FXML
+    private TableView<TaskItem> tasksTable;
+    @FXML
+    private TableColumn<TaskItem, Integer> idCol;
+    @FXML
+    private TableColumn<TaskItem, String> titleCol;
+    @FXML
+    private TableColumn<TaskItem, String> descriptionCol;
+    @FXML
+    private TableColumn<TaskItem, String> startDateCol;
+    @FXML
+    private TableColumn<TaskItem, String> endDateCol;
+    @FXML
+    private TableColumn<TaskItem, Integer> inmatesCountCol;
+    @FXML
+    private Button printTasksButton;
 
     private Datasource datasource;
     private Executor executor;
@@ -61,6 +79,77 @@ public class TasksController implements Initializable {
         associateTableColumns();
 
         retrieveAndShowAllTasks();
+
+        printTasksButton.setOnAction(event -> handlePrintingTasksAction());
+    }
+
+    private void handlePrintingTasksAction() {
+
+        javafx.concurrent.Task<List<Task>> retrieveTasksTask = new javafx.concurrent.Task<>() {
+            @Override
+            protected List<Task> call() throws Exception {
+                TaskRepository taskRepository = new TaskRepository(datasource.getEntityManager());
+                return taskRepository.findAll();
+            }
+        };
+
+        retrieveTasksTask.setOnFailed(workerStateEvent -> {
+            Log.error(getClass().getSimpleName(), "retrieveAndShowAllTasks: failed", workerStateEvent.getSource().getException());
+            AlertHelper.showErrorAlert("Retrieving All Tasks", "The retrieval failed, check the logs for more information");
+        });
+
+        retrieveTasksTask.setOnSucceeded(workerStateEvent -> {
+
+            List<Task> taskList = (List<Task>) workerStateEvent.getSource().getValue();
+
+            try {
+                //Choose a directory
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Select Location For the Report File");
+                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                final File selectedDir = directoryChooser.showDialog(rootPane.getScene().getWindow());
+
+                //Dynamic filename
+                String filename = selectedDir.getAbsolutePath() + "/" + String.valueOf(System.currentTimeMillis()).concat("-tasks-report.pdf");
+
+                //Create a instance of Table printer passing the filename
+                TablePrinter tablePrinter = new TablePrinter(filename);
+
+                tablePrinter.initDocument(20, PageSize.A4.rotate());
+
+                tablePrinter.addTitle("Tasks");
+
+                Table table = new Table(4);
+
+                //Add the headers
+                table.addHeaderCell("Title");
+                table.addHeaderCell("Description");
+                table.addHeaderCell("Start Date");
+                table.addHeaderCell("End Date");
+
+                taskList.forEach(task -> {
+                    table.addCell(task.getTitle());
+                    table.addCell(task.getDescription());
+                    table.addCell(dateFormatter.format(task.getStartDate()));
+                    table.addCell(dateFormatter.format(task.getEndDate()));
+
+                });
+
+                tablePrinter.addBlockElement(table);
+
+                tablePrinter.print();
+
+                AlertHelper.showInformationAlert("Printing", "Report printed Successfully");
+
+            } catch (IOException e) {
+                Log.error(getClass().getSimpleName(), "Printing", e);
+                AlertHelper.showErrorAlert("Printing Stuff", "Printing failed, try again");
+            }
+
+
+        });
+
+        executor.execute(retrieveTasksTask);
     }
 
     private void launchAddTaskWindow() {

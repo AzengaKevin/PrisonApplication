@@ -1,5 +1,7 @@
 package org.epics.controllers.admin;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.element.Table;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.epics.data.Datasource;
@@ -20,7 +23,10 @@ import org.epics.data.enums.Role;
 import org.epics.data.repositories.StaffRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
+import org.epics.internals.printing.TablePrinter;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -29,7 +35,8 @@ import java.util.concurrent.Executors;
 
 public class StaffController implements Initializable {
 
-    private Datasource datasource;
+    @FXML
+    private Button printStaffMembersButton;
 
     @FXML
     private ProgressIndicator staffProgressIndicator;
@@ -51,6 +58,7 @@ public class StaffController implements Initializable {
     private MenuItem deleteMemberMenuItem;
 
     private Executor executor;
+    private Datasource datasource;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -103,6 +111,81 @@ public class StaffController implements Initializable {
 
             executor.execute(retrieveStaff);
         });
+
+        printStaffMembersButton.setOnAction(event -> handlePrintingStaffMemebers());
+    }
+
+    private void handlePrintingStaffMemebers() {
+        Task<List<StaffEntity>> staffTask = new Task<>() {
+            @Override
+            protected List<StaffEntity> call() throws Exception {
+                StaffRepository staffRepository = new StaffRepository(datasource.getEntityManager());
+                return staffRepository.findByRoles(List.of(Role.Admin, Role.Doctor, Role.Guard));
+            }
+        };
+
+        staffTask.setOnFailed(event -> {
+
+            staffProgressIndicator.setVisible(false);
+
+            Log.error(getClass().getSimpleName(), "retrieveAndShowStaff", event.getSource().getException());
+        });
+
+        staffTask.setOnSucceeded(event -> {
+
+            staffProgressIndicator.setVisible(false);
+
+            List<StaffEntity> staffEntityList = (List<StaffEntity>) event.getSource().getValue();
+
+
+            try {
+                //Choose a directory
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Select Location For the Report File");
+                directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                final File selectedDir = directoryChooser.showDialog(rootPane.getScene().getWindow());
+
+                //Dynamic filename
+                String filename = selectedDir.getAbsolutePath() + "/" + String.valueOf(System.currentTimeMillis()).concat("-staff-report.pdf");
+
+                //Create a instance of Table printer passing the filename
+                TablePrinter tablePrinter = new TablePrinter(filename);
+
+                tablePrinter.initDocument(20, PageSize.A4.rotate());
+
+                tablePrinter.addTitle("Prison Staff");
+
+                Table table = new Table(4);
+
+                //Add the headers
+                table.addHeaderCell("ID");
+                table.addHeaderCell("Name");
+                table.addHeaderCell("Username");
+                table.addHeaderCell("Role");
+
+                staffEntityList.forEach(staffEntity -> {
+
+                    table.addCell(String.valueOf(staffEntity.getId()));
+                    table.addCell(staffEntity.getName());
+                    table.addCell(staffEntity.getUsername());
+                    table.addCell(staffEntity.getGroup());
+
+                });
+
+                tablePrinter.addBlockElement(table);
+
+                tablePrinter.print();
+
+                AlertHelper.showInformationAlert("Printing", "Report printed Successfully");
+
+            } catch (IOException e) {
+                Log.error(getClass().getSimpleName(), "Printing", e);
+                AlertHelper.showErrorAlert("Printing Stuff", "Printing failed, try again");
+            }
+        });
+
+        staffProgressIndicator.setVisible(true);
+        executor.execute(staffTask);
     }
 
     private void launchAddStaffStage() {
