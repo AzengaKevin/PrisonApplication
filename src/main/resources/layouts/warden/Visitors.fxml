@@ -22,6 +22,7 @@
                         <TableColumn fx:id="genderCol" prefWidth="75.0" text="Gender"/>
                         <TableColumn fx:id="dobCol" prefWidth="75.0" text="Date Of Birth"/>
                         <TableColumn fx:id="phoneCol" prefWidth="75.0" text="Phone"/>
+                        <TableColumn fx:id="inmateField" prefWidth="75.0" text="Inmate"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

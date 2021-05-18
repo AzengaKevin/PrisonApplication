@@ -12,8 +12,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.epics.data.Datasource;
+import org.epics.data.entities.InmateEntity;
 import org.epics.data.entities.Visitor;
 import org.epics.data.enums.Gender;
+import org.epics.data.repositories.InmateRepository;
 import org.epics.data.repositories.VisitorRepository;
 import org.epics.helpers.AlertHelper;
 import org.epics.helpers.Log;
@@ -24,13 +26,16 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class AddVisitorController implements Initializable {
 
-    public AnchorPane rootPane;
+    @FXML
+    private AnchorPane rootPane;
+
     @FXML
     private TextField nameField;
     @FXML
@@ -39,6 +44,8 @@ public class AddVisitorController implements Initializable {
     private TextField phoneField;
     @FXML
     private ComboBox<String> genderField;
+    @FXML
+    public ComboBox<String> inmateField;
     @FXML
     private DatePicker dobField;
     @FXML
@@ -63,9 +70,39 @@ public class AddVisitorController implements Initializable {
         });
 
         setupGenderField();
+        setupInmatesField();
 
         cancelButton.setOnAction(event -> closeStage());
         submitButton.setOnAction(event -> handleAddVisitorOperation());
+
+    }
+
+    private void setupInmatesField() {
+
+        Task<List<InmateEntity>> retrieveAllInmatesTask = new Task<>() {
+            @Override
+            protected List<InmateEntity> call() throws Exception {
+
+                InmateRepository inmateRepository = new InmateRepository(datasource.getEntityManager());
+
+                return inmateRepository.findAll();
+            }
+        };
+
+        retrieveAllInmatesTask.setOnFailed(workerStateEvent -> {
+            Log.error(getClass().getSimpleName(), "setupInmatesField", workerStateEvent.getSource().getException());
+            AlertHelper.showErrorAlert("Getting Inmates", "Could not retrieve all inmates, check the logs for more intel");
+        });
+
+        retrieveAllInmatesTask.setOnSucceeded(workerStateEvent -> {
+
+            List<InmateEntity> inmateEntityList = (List<InmateEntity>) workerStateEvent.getSource().getValue();
+            List<String> inmateNamesList = inmateEntityList.stream().map(InmateEntity::getName).toList();
+
+            inmateField.setItems(FXCollections.observableArrayList(inmateNamesList));
+        });
+
+        executor.execute(retrieveAllInmatesTask);
 
     }
 
@@ -80,8 +117,9 @@ public class AddVisitorController implements Initializable {
         String phone = phoneField.getText();
         String dobText = dobField.getEditor().getText();
         String gender = genderField.getSelectionModel().getSelectedItem();
+        String inmateName = inmateField.getSelectionModel().getSelectedItem();
 
-        if (name.isEmpty() || hudumaNumber.isEmpty() || phone.isEmpty() || dobText.isEmpty() || gender.isEmpty()) {
+        if (name.isEmpty() || hudumaNumber.isEmpty() || phone.isEmpty() || dobText.isEmpty() || gender.isEmpty() || inmateName.isEmpty()) {
             AlertHelper.showErrorAlert("Adding Visitor", "All fields are required");
             return;
         }
@@ -90,8 +128,33 @@ public class AddVisitorController implements Initializable {
         Instant dobInstant = Instant.from(dobLocalDate.atStartOfDay(ZoneId.systemDefault()));
         Date dob = Date.from(dobInstant);
 
+        Task<InmateEntity> retrieveSingleInmate = new Task<>() {
+            @Override
+            protected InmateEntity call() throws Exception {
+
+                InmateRepository inmateRepository = new InmateRepository(datasource.getEntityManager());
+                return inmateRepository.findByName(inmateName).orElseThrow(IllegalAccessError::new);
+            }
+        };
+
         Visitor visitor = new Visitor(name, Gender.fromString(gender), dob, hudumaNumber, phone);
 
+        retrieveSingleInmate.setOnFailed(workerStateEvent -> {
+            Log.error(getClass().getSimpleName(), "handleAddVisitorOperation", workerStateEvent.getSource().getException());
+            AlertHelper.showErrorAlert("Adding Visitor Operation", "Failed to identify selected inmate, check the logs for more information");
+        });
+
+        retrieveSingleInmate.setOnSucceeded(workerStateEvent -> {
+            InmateEntity inmateEntity = (InmateEntity) workerStateEvent.getSource().getValue();
+            visitor.setInmateEntity(inmateEntity);
+            handleAddingVisitor(visitor);
+        });
+
+        executor.execute(retrieveSingleInmate);
+
+    }
+
+    private void handleAddingVisitor(Visitor visitor) {
         Task<Visitor> addVisitorTask = new Task<>() {
             @Override
             protected Visitor call() throws Exception {

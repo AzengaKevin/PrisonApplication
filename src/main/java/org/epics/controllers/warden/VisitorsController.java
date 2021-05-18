@@ -51,6 +51,8 @@ public class VisitorsController implements Initializable {
     private TableColumn<VisitorItem, String> dobCol;
     @FXML
     private TableColumn<VisitorItem, String> phoneCol;
+    @FXML
+    private TableColumn<VisitorItem, String> inmateField;
 
     public static final DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
@@ -85,6 +87,7 @@ public class VisitorsController implements Initializable {
         genderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
         dobCol.setCellValueFactory(new PropertyValueFactory<>("dob"));
+        inmateField.setCellValueFactory(new PropertyValueFactory<>("inmate"));
     }
 
     private void retrieveAndShowAllVisitors() {
@@ -147,6 +150,7 @@ public class VisitorsController implements Initializable {
         private final SimpleStringProperty phone;
         private final SimpleStringProperty dob;
         private final SimpleStringProperty gender;
+        private final SimpleStringProperty inmate;
 
         public VisitorItem(Visitor visitor) {
             this.id = new SimpleIntegerProperty(visitor.getId());
@@ -155,6 +159,7 @@ public class VisitorsController implements Initializable {
             this.phone = new SimpleStringProperty(visitor.getPhone());
             this.dob = new SimpleStringProperty(dateFormatter.format(visitor.getDate()));
             this.gender = new SimpleStringProperty(visitor.getGender().toString());
+            this.inmate = new SimpleStringProperty(visitor.getInmateEntity().getName());
         }
 
         public int getId() {
@@ -179,6 +184,10 @@ public class VisitorsController implements Initializable {
 
         public String getDob() {
             return dob.get();
+        }
+
+        public String getInmate() {
+            return inmate.get();
         }
     }
 }

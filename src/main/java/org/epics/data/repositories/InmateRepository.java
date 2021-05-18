@@ -25,6 +25,17 @@ public class InmateRepository {
 
     }
 
+    public Optional<InmateEntity> findByName(String name) throws Exception {
+
+        InmateEntity inmateEntity = entityManager.createNamedQuery("InmateEntity.findByName", InmateEntity.class)
+                .setParameter("name", name)
+                .getSingleResult();
+
+        if (inmateEntity != null) return Optional.of(inmateEntity);
+
+        return Optional.empty();
+    }
+
     /**
      * Updates or inserts a Inmate in to the database
      *
@@ -39,4 +50,5 @@ public class InmateRepository {
 
         return Optional.of(inmateEntity);
     }
+
 }

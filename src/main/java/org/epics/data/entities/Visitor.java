@@ -20,6 +20,9 @@ public class Visitor extends UserEntity {
     @Column(unique = true)
     private String phone;
 
+    @OneToOne
+    private InmateEntity inmateEntity;
+
 
     @Override
     public String getGroup() {
@@ -67,5 +70,13 @@ public class Visitor extends UserEntity {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public InmateEntity getInmateEntity() {
+        return inmateEntity;
+    }
+
+    public void setInmateEntity(InmateEntity inmateEntity) {
+        this.inmateEntity = inmateEntity;
     }
 }

@@ -9,6 +9,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "inmates")
+@NamedQueries({
+        @NamedQuery(
+                name = "InmateEntity.findByName",
+                query = "SELECT i FROM InmateEntity i WHERE i.name = :name"
+        )
+})
 public class InmateEntity extends UserEntity {
 
     @Column(name = "case_number")
@@ -32,6 +38,9 @@ public class InmateEntity extends UserEntity {
 
     @ManyToMany(mappedBy = "inmateEntityList")
     private Set<Task> tasks = new HashSet<>();
+
+    @OneToOne(mappedBy = "inmateEntity")
+    private Visitor visitor;
 
     public InmateEntity() {
     }
@@ -100,6 +109,14 @@ public class InmateEntity extends UserEntity {
 
     public void addTask(Task task) {
         tasks.add(task);
+    }
+
+    public Visitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(Visitor visitor) {
+        this.visitor = visitor;
     }
 
     @Override
