@@ -28,6 +28,10 @@ import java.util.concurrent.Executors;
 public class AddInmateController implements Initializable {
 
     @FXML
+    private TextField blockField;
+    @FXML
+    private TextField cellNumberField;
+    @FXML
     private AnchorPane rootPane;
     @FXML
     private TextField nameField;
@@ -73,6 +77,8 @@ public class AddInmateController implements Initializable {
         String name = nameField.getText();
         String gender = genderField.getSelectionModel().getSelectedItem();
         String caseNumber = caseNumberField.getText();
+        String block = blockField.getText();
+        String cell = cellNumberField.getText();
 
         if (name.isEmpty()) {
             AlertHelper.showErrorAlert("Adding Inmate", "Inmate Name is required");
@@ -110,6 +116,11 @@ public class AddInmateController implements Initializable {
             return;
         }
 
+        if (cell.isEmpty() || block.isEmpty()) {
+            AlertHelper.showErrorAlert("Adding Inmate", "Cell block information");
+            return;
+        }
+
         LocalDate dobLocalDate = dobField.getValue();
         Instant dobInstant = Instant.from(dobLocalDate.atStartOfDay(ZoneId.systemDefault()));
         Date dob = Date.from(dobInstant);
@@ -134,7 +145,7 @@ public class AddInmateController implements Initializable {
             return;
         }
 
-        InmateEntity inmateEntity = new InmateEntity(name, caseNumber, Gender.fromString(gender), null, dob, convictionDate, releaseDate);
+        InmateEntity inmateEntity = new InmateEntity(name, caseNumber, Gender.fromString(gender), null, block, cell, dob, convictionDate, releaseDate);
 
         Task<InmateEntity> addInmateEntityTask = new Task<>() {
             @Override

@@ -24,6 +24,10 @@ public class InmateEntity extends UserEntity {
 
     private String address;
 
+    private String block;
+
+    private String cell;
+
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
@@ -45,11 +49,13 @@ public class InmateEntity extends UserEntity {
     public InmateEntity() {
     }
 
-    public InmateEntity(String name, String caseNumber, Gender gender, String address, Date dateOfBirth, Date convictionDate, Date releaseDate) {
+    public InmateEntity(String name, String caseNumber, Gender gender, String address, String block, String cell, Date dateOfBirth, Date convictionDate, Date releaseDate) {
         super(name);
         this.caseNumber = caseNumber;
         this.gender = gender;
         this.address = address;
+        this.block = block;
+        this.cell = cell;
         this.dateOfBirth = dateOfBirth;
         this.convictionDate = convictionDate;
         this.releaseDate = releaseDate;
@@ -117,6 +123,22 @@ public class InmateEntity extends UserEntity {
 
     public void setVisitor(Visitor visitor) {
         this.visitor = visitor;
+    }
+
+    public String getBlock() {
+        return block;
+    }
+
+    public void setBlock(String block) {
+        this.block = block;
+    }
+
+    public String getCell() {
+        return cell;
+    }
+
+    public void setCell(String cell) {
+        this.cell = cell;
     }
 
     @Override

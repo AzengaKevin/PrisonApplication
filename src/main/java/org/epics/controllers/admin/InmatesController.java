@@ -57,6 +57,10 @@ public class InmatesController implements Initializable {
     private TableColumn<InmateItem, String> dateOfBirthCol;
     @FXML
     private TableColumn<InmateItem, String> statusCol;
+    @FXML
+    private TableColumn<InmateItem, String> blockCol;
+    @FXML
+    private TableColumn<InmateItem, String> cellCol;
 
     private Executor executor;
     private Datasource datasource;
@@ -120,6 +124,8 @@ public class InmatesController implements Initializable {
         convictionDateCol.setCellValueFactory(new PropertyValueFactory<>("convictionDate"));
         releaseDateCol.setCellValueFactory(new PropertyValueFactory<>("releaseDate"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        blockCol.setCellValueFactory(new PropertyValueFactory<>("block"));
+        cellCol.setCellValueFactory(new PropertyValueFactory<>("cell"));
     }
 
 
@@ -157,6 +163,8 @@ public class InmatesController implements Initializable {
         final private SimpleStringProperty convictionDate;
         final private SimpleStringProperty releaseDate;
         final private SimpleStringProperty status;
+        final private SimpleStringProperty block;
+        final private SimpleStringProperty cell;
 
         public InmateItem(InmateEntity inmateEntity) {
             this.id = new SimpleIntegerProperty(inmateEntity.getId());
@@ -166,6 +174,8 @@ public class InmatesController implements Initializable {
             this.convictionDate = new SimpleStringProperty(dateFormat.format(inmateEntity.getConvictionDate()));
             this.releaseDate = new SimpleStringProperty(dateFormat.format(inmateEntity.getReleaseDate()));
             this.status = new SimpleStringProperty(inmateEntity.getReleaseDate().before(new Date()) ? "Released" : "Behind Bars");
+            this.block = new SimpleStringProperty(inmateEntity.getBlock());
+            this.cell = new SimpleStringProperty(inmateEntity.getCell());
         }
 
 
@@ -199,6 +209,14 @@ public class InmatesController implements Initializable {
 
         public String getStatus() {
             return status.get();
+        }
+
+        public String getBlock() {
+            return block.get();
+        }
+
+        public String getCell() {
+            return cell.get();
         }
     }
 }
